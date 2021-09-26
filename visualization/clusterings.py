@@ -6,7 +6,7 @@ import numpy as np
 # TODO: might want to put this somewhere else
 def eucl_dist(p, q):
     'the standard Euclidean norm'
-    return sqrt(sum([(p_i - q_i) ** 2 for p_i, q_i in zip(p, q)]))
+    return np.linalg.norm(p-q)
 
 
 # TODO: this computes k-center cost. compute k-median or delete if not necessary
