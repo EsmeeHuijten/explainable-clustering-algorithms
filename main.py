@@ -1,7 +1,8 @@
 import algorithms.randomized
 import data.artificial
+import visualization.clusterings
 
-instance = data.artificial.toy_input(5, 2)
+instance = data.artificial.k_clusters(5)
 solver = algorithms.randomized.RandomCenters()
 output = solver.solve(instance)
-print(output)
+visualization.clusterings.show_clusters(output.instance.points, output.centers)
