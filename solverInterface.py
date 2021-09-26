@@ -7,7 +7,7 @@ import numpy as np
 
 @dataclass
 class Instance:
-    points: list[np.ndarray]
+    points: list
     k: int
 
 
