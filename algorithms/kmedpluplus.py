@@ -1,0 +1,1 @@
+# TODO: implement k-median++; i.e. initial probabilistic seeding with weights and LLoyd's iterative improvement
