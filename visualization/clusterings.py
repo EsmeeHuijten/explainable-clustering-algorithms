@@ -1,12 +1,11 @@
-from math import sqrt
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 
 # TODO: might want to put this somewhere else
-def eucl_dist(p, q):
+def eucl_dist(p, q, _norm = np.linalg.norm): # putting np.linalg.norm as default argument avoids lookup of np at each call
     'the standard Euclidean norm'
-    return np.linalg.norm(p-q)
+    return _norm(p-q)
 
 
 # TODO: this computes k-center cost. compute k-median or delete if not necessary
