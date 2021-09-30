@@ -7,8 +7,9 @@ import numpy as np
 
 @dataclass
 class Instance:
-    points: list
-    k: int
+    """represents an instance of the k-median problem"""
+    points: list # each point is np.array
+    k: int # number of centers to be opened
 
 
 @dataclass
