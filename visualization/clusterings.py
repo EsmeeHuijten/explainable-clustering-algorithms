@@ -2,7 +2,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 from util import closest_center
-
+# TODO: refactor show_clusters to remove this function
 def clusters(points, centers):
     '''for each point compute the (index of the) closest center
     and the cost of the clustering'''

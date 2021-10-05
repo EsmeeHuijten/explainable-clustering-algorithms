@@ -49,7 +49,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     return Output(assignment.instance, centers=new_centers)
 
 
-class KMedian(Solver):
+class KMedPlusPlus(Solver):
     def solve(self, instance: Instance, numiter=100) -> Output:
         """
         Solve a k-median problem with the k-median++ algorithm

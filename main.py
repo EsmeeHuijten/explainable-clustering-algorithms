@@ -1,11 +1,11 @@
-import algorithms.randomized
+import algorithms.random_centers
 import algorithms.kmedpluplus
 import data.synthetic
 import visualization.clusterings
 
 instance = data.synthetic.k_clusters(5)
-# solver = algorithms.randomized.RandomCenters()
-solver = algorithms.kmedpluplus.KMedian()
+# solver = algorithms.random_centers.RandomCenters()
+solver = algorithms.kmedpluplus.KMedPlusPlus()
 output = solver.solve(instance)
 visualization.clusterings.show_clusters(output)
 
