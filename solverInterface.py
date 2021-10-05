@@ -1,15 +1,15 @@
 import abc
 from dataclasses import dataclass
 
-import numpy as np
+from util import closest_center
 
-# TODO: what do we assume about our inputs? d-dimensional Eucl space? (then don't check for validity)
 
 @dataclass
 class Instance:
-    """represents an instance of the k-median problem"""
-    points: list # each point is np.array
-    k: int # number of centers to be opened
+    """represents an instance of the k-median problem
+    assume all instances are valid d-dimensional euclidean instances"""
+    points: list  # each point is np.array
+    k: int  # number of centers to be opened
 
 
 @dataclass
@@ -17,11 +17,16 @@ class Output:
     # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
     centers: list
-    clusters: list
+
+    # TODO: implement this in a way such that assignment is only computed once
+    def assignment(self):
+        return {point: closest_center(point, self.centers) for point in self.instance.points}
+
+    def clusters(self):
+        return {i: [point for point,entry in self.assignment().items() if entry[0]==i] for i in range(self.instance.k)}
 
     def cost(self):
-        # TODO: implement this:
-        raise NotImplementedError
+        return []
 
 
 class DecisionTree:

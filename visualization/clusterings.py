@@ -1,37 +1,26 @@
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
+from util import closest_center
 
-# TODO: might want to put this somewhere else
-def eucl_dist(p, q, _norm = np.linalg.norm): # putting np.linalg.norm as default argument avoids lookup of np at each call
-    'the standard Euclidean norm'
-    return _norm(p-q)
-
-
-# TODO: this computes k-center cost. compute k-median or delete if not necessary
 def clusters(points, centers):
     '''for each point compute the (index of the) closest center
     and the cost of the clustering'''
 
-    def closest_center_distance(point):
-        dists = [eucl_dist(point, center) for center in centers]
-        return np.argmin(dists), min(dists)
-
-    closest_centers_distances = [closest_center_distance(point) for point in points]
+    closest_centers_distances = [closest_center(point, centers) for point in points]
     closest_centers = [entry[0] for entry in closest_centers_distances]
-    cost = max([entry[1] for entry in closest_centers_distances])
-    return closest_centers, round(cost, 2)
+    # cost = sum([entry[1] for entry in closest_centers_distances])
+    return closest_centers
 
 
-# TODO: refactor to take Output as input
-def show_clusters(points, centers):
-    k = len(centers)
-    closest_center, cost = clusters(points, centers)
+def show_clusters(output):
+    k = len(output.centers)
+    closest_center = clusters(output.instance.points, output.centers)
 
     colors = cm.rainbow(np.linspace(0, 1, k))  # get a selection of evenly distributed colors
 
-    xcoords = [point[0] for point in points]
-    ycoords = [point[1] for point in points]
+    xcoords = [point[0] for point in output.instance.points]
+    ycoords = [point[1] for point in output.instance.points]
     xmin, xmax = min(xcoords), max(xcoords)
     ymin, ymax = min(ycoords), max(ycoords)
 
@@ -39,10 +28,10 @@ def show_clusters(points, centers):
     plt.ylim(bottom=ymin - (ymax - ymin) * 0.1, top=ymax + (ymax - ymin) * 0.1)
     plt.axis('off')
 
-    xs = [center[0] for center in centers]
-    ys = [center[1] for center in centers]
+    xs = [center[0] for center in output.centers]
+    ys = [center[1] for center in output.centers]
     plt.scatter(xs, ys, marker="o", s=150, color="black")
 
-    for i in range(len(points)):
-        plt.scatter(points[i][0], points[i][1], color=colors[closest_center[i]])
+    for i in range(len(output.instance.points)):
+        plt.scatter(output.instance.points[i][0], output.instance.points[i][1], color=colors[closest_center[i]])
     plt.show()

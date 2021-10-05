@@ -7,5 +7,5 @@ instance = data.synthetic.k_clusters(5)
 # solver = algorithms.randomized.RandomCenters()
 solver = algorithms.kmedpluplus.KMedian()
 output = solver.solve(instance)
-visualization.clusterings.show_clusters(output.instance.points, output.centers)
+visualization.clusterings.show_clusters(output)
 
