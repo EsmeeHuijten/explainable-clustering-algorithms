@@ -1,4 +1,5 @@
 import abc
+import numpy as np
 from dataclasses import dataclass
 
 from util import closest_center
@@ -20,10 +21,20 @@ class Output:
 
     # TODO: implement this in a way such that assignment is only computed once
     def assignment(self):
-        return {point: closest_center(point, self.centers) for point in self.instance.points}
+        # pointlist = self.instance.points
+        # pointarray = np.array(pointlist)
+        # print(pointarray)
+        # new_pointlist = [list(x) for x in pointarray]
+        # for point in self.instance.points:
+        #     [i in range(len(self.instance.points)) if pointarray[i, :] == point]
+        return {i: closest_center(self.instance.points[i], self.centers) for i in
+                range(len(self.instance.points))}
+        # return {pointlist.index(np.array([point[0], point[1]])): closest_center(point, self.centers) for point in self.instance.points}
 
     def clusters(self):
-        return {i: [point for point,entry in self.assignment().items() if entry[0]==i] for i in range(self.instance.k)}
+        pointlist = self.instance.points
+        return {i: [index for index, entry in self.assignment().items() if entry[0] == i] for i in
+                range(self.instance.k)}
 
     def cost(self):
         return []
