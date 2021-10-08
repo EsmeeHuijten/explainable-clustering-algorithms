@@ -1,15 +1,13 @@
-import abc
-import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from util import closest_center
+from util import Point
 
 
 @dataclass
 class Instance:
     """represents an instance of the k-median problem
     assume all instances are valid d-dimensional euclidean instances"""
-    points: list  # each point is np.array
+    points: list[Point]  # each point is np.array
     k: int  # number of centers to be opened
 
 
@@ -17,27 +15,17 @@ class Instance:
 class Output:
     # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
-    centers: list
+    centers: list[Point]
+    assignment: dict[Point, Point] = field(init=False)
+    cost: float = field(init=False)
 
-    # TODO: implement this in a way such that assignment is only computed once
-    def assignment(self):
-        # pointlist = self.instance.points
-        # pointarray = np.array(pointlist)
-        # print(pointarray)
-        # new_pointlist = [list(x) for x in pointarray]
-        # for point in self.instance.points:
-        #     [i in range(len(self.instance.points)) if pointarray[i, :] == point]
-        return {i: closest_center(self.instance.points[i], self.centers) for i in
-                range(len(self.instance.points))}
-        # return {pointlist.index(np.array([point[0], point[1]])): closest_center(point, self.centers) for point in self.instance.points}
+    def __post_init__(self):
+        self.assignment = {point: point.closest_center(self.centers) for point in self.instance.points}
+        self.cost = sum([self.assignment[point][1] for point in self.instance.points])
 
-    def clusters(self):
-        pointlist = self.instance.points
-        return {i: [index for index, entry in self.assignment().items() if entry[0] == i] for i in
-                range(self.instance.k)}
-
-    def cost(self):
-        return []
+    def clusters(self) -> dict[Point, list[Point]]:
+        return {center: [point for point in self.instance.points if self.assignment[point][0] == center] for center in
+                self.centers}
 
 
 class DecisionTree:
@@ -47,10 +35,3 @@ class DecisionTree:
 @dataclass
 class ExplainableOutput(Output):
     decision_tree: DecisionTree
-
-
-# TODO: restricting type (hints) of implementation is tricky. so this does not do much...
-class Solver(abc.ABC):
-    @abc.abstractmethod
-    def solve(self, instance: Instance) -> Output:
-        pass

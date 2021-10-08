@@ -1,12 +1,14 @@
 import random
+from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 from util import dist
-from solverInterface import Solver, Output, Instance
+from solverInterface import Output, Instance
 from visualization.clusterings import clusters
 
 
-def seed(instance: Instance) -> Output:
+def random_seed(instance: Instance) -> Output:
     """
     Choose the first assignment of centers.
     As of now, the centers are chosen randomly.
@@ -16,17 +18,17 @@ def seed(instance: Instance) -> Output:
     return Output(instance, centers=centers)
 
 
-def seed_prob(instance: Instance) -> Output:
+def prob_seed(instance: Instance) -> Output:
     """
     Choose the first assignment of centers using probabilistic seeding.
     @type instance: instance of the k-median problem
     """
     centers = np.zeros(instance.k)
-    centers[0] = random.sample(instance.points)
-    for i in range(k - 1):
+    centers[0] = random.choice(instance.points)
+    for i in range(instance.k - 1):
         distances_squared = [dist_to_nearest_center(centers[0:i + 1], point) ** 2 for point in instance.points]
         dists_sq_norm = distances_squared / sum(distances_squared)
-        new_index = np.random.choice(np.arange(0, len(instance.points)), p=dists_sq_norm)
+        new_index = random.choice(np.arange(0, len(instance.points)), p=dists_sq_norm)
         centers[i + 1] = instance.points[int(new_index)]
 
 
@@ -35,7 +37,7 @@ def dist_to_nearest_center(centers, point):
     return min(distances)
 
 
-def compute_centroid_center(assignment: Output, clusters_indexes):
+def closest_to_centroid(assignment: Output, clusters_indexes):
     """
     Given a cluster via clusters_indexes, this function computes the centroid of that cluster
     and returns the point closest to the centroid.
@@ -51,7 +53,7 @@ def compute_centroid_center(assignment: Output, clusters_indexes):
     return new_center_index
 
 
-def compute_medoid(assignment: Output, clusters_indexes):
+def medoid_bruteforce(assignment: Output, clusters_indexes):
     """
     Given a cluster via clusters_indexes, this function computes the medoid of that cluster
     and returns the medoid as well as the "cost" of the medoid, which is the sum of distances from each
@@ -75,7 +77,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     print("clusterassignment", clusterassignment)
     for name, indexes in clusterassignment.items():
         print(name, indexes)
-    new_centers = [compute_centroid_center(assignment, indexes) for name, indexes in clusterassignment.items() if indexes]
+    new_centers = [closest_to_centroid(assignment, indexes) for name, indexes in clusterassignment.items() if indexes]
     print("new_centers", [center for center in new_centers])
     # closest_centers = clusters(assignment.instance.points, assignment.centers)
     # k = len(assignment.centers)
@@ -99,15 +101,16 @@ def lloyd_iteration(assignment: Output) -> Output:
 
     return Output(assignment.instance, centers=new_centers)
 
-
-class KMedPlusPlus(Solver):
-    def solve(self, instance: Instance, numiter=3) -> Output:
+@dataclass
+class KMedPlusPlus:
+    numiter: int = 3
+    def __call__(self, instance: Instance) -> Output:
         """
         Solve a k-median problem with the k-median++ algorithm
         @type instance: instance of the k-median problem
         :param numiter: number of iterations
         """
-        solution = seed(instance)
-        for _ in range(numiter):
+        solution = random_seed(instance)
+        for _ in range(self.numiter):
             solution = lloyd_iteration(solution)
         return solution

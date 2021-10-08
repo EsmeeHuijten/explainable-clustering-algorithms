@@ -12,15 +12,15 @@ def clusters(points, centers):
     # cost = sum([entry[1] for entry in closest_centers_distances])
     return closest_centers
 
-
+# TODO: refactor this to use output.assignment and output.clusters
 def show_clusters(output):
     k = len(output.centers)
     closest_center = clusters(output.instance.points, output.centers)
 
     colors = cm.rainbow(np.linspace(0, 1, k))  # get a selection of evenly distributed colors
 
-    xcoords = [point[0] for point in output.instance.points]
-    ycoords = [point[1] for point in output.instance.points]
+    xcoords = [point.coordinates[0] for point in output.instance.points]
+    ycoords = [point.coordinates[1] for point in output.instance.points]
     xmin, xmax = min(xcoords), max(xcoords)
     ymin, ymax = min(ycoords), max(ycoords)
 
@@ -28,10 +28,10 @@ def show_clusters(output):
     plt.ylim(bottom=ymin - (ymax - ymin) * 0.1, top=ymax + (ymax - ymin) * 0.1)
     plt.axis('off')
 
-    xs = [center[0] for center in output.centers]
-    ys = [center[1] for center in output.centers]
+    xs = [center.coordinates[0] for center in output.centers]
+    ys = [center.coordinates[1] for center in output.centers]
     plt.scatter(xs, ys, marker="o", s=150, color="black")
 
     for i in range(len(output.instance.points)):
-        plt.scatter(output.instance.points[i][0], output.instance.points[i][1], color=colors[closest_center[i]])
+        plt.scatter(output.instance.points[i].coordinates[0], output.instance.points[i].coordinates[1], color=colors[closest_center[i]])
     plt.show()
