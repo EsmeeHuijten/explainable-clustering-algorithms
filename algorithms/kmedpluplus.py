@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 from util import dist
 from solverInterface import Output, Instance
-from visualization.clusterings import clusters
+# from visualization.clusterings import clusters
 
 
 def random_seed(instance: Instance) -> Output:

@@ -1,21 +1,10 @@
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
-from util import closest_center
-# TODO: refactor show_clusters to remove this function
-def clusters(points, centers):
-    '''for each point compute the (index of the) closest center
-    and the cost of the clustering'''
 
-    closest_centers_distances = [closest_center(point, centers) for point in points]
-    closest_centers = [entry[0] for entry in closest_centers_distances]
-    # cost = sum([entry[1] for entry in closest_centers_distances])
-    return closest_centers
-
-# TODO: refactor this to use output.assignment and output.clusters
 def show_clusters(output):
     k = len(output.centers)
-    closest_center = clusters(output.instance.points, output.centers)
+    clusterpoints = output.clusters()
 
     colors = cm.rainbow(np.linspace(0, 1, k))  # get a selection of evenly distributed colors
 
@@ -32,6 +21,8 @@ def show_clusters(output):
     ys = [center.coordinates[1] for center in output.centers]
     plt.scatter(xs, ys, marker="o", s=150, color="black")
 
-    for i in range(len(output.instance.points)):
-        plt.scatter(output.instance.points[i].coordinates[0], output.instance.points[i].coordinates[1], color=colors[closest_center[i]])
+    for i in range(len(output.centers)):
+        x = [point.coordinates[0] for point in clusterpoints[output.centers[i]]]
+        y = [point.coordinates[1] for point in clusterpoints[output.centers[i]]]
+        plt.scatter(x, y, color=colors[i])
     plt.show()
