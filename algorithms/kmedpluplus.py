@@ -3,6 +3,7 @@ implements the k-means++ algorithm for the k-median objective
 """
 import random
 from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 
@@ -14,17 +15,20 @@ def random_seed(instance: Instance) -> Output:
     """
     Choose the first assignment of centers.
     As of now, the centers are chosen randomly.
-    @type instance: instance of the k-median problem
+    @param instance: instance of the k-median problem
     """
     centers = random.sample(instance.points, instance.k)
     return Output(instance, centers=centers)
 
 
-def prob_seed(instance: Instance) -> Output:
+def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
     """
     Choose the first assignment of centers using probabilistic seeding.
-    @type instance: instance of the k-median problem
+    @param instance: instance of the k-median problem
+    @param seed: optional seed for random choices
     """
+    if seed:
+        random.seed(seed)
     centers = [np.random.choice(instance.points)]  # choose first center randomly
     for i in range(1, instance.k):
         distances_sq = np.array([point.closest_center(centers[0:i + 1])[1] ** 2 for point in instance.points])
@@ -65,7 +69,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     """
     Execute one iteration of Lloyd's algorithm.
     @param assignment: current assignment of centers
-    @type Output: feasible solution of the k-median problem (NOT necessarily optimal)
+    @param return: feasible solution of the k-median problem (NOT necessarily optimal)
     """
     clusterassignment = assignment.clusters()
     new_centers = [medoid_bruteforce(clusterpoints) for center, clusterpoints
@@ -76,14 +80,14 @@ def lloyd_iteration(assignment: Output) -> Output:
 @dataclass
 class KMedPlusPlus:
     numiter: int = 1
+    seed: Optional[int] = None
 
     def __call__(self, instance: Instance) -> Output:
         """
         Solve a k-median problem with the k-median++ algorithm
-        @type instance: instance of the k-median problem
-        :param numiter: number of iterations
+        @param instance: instance of the k-median problem
         """
-        solution = prob_seed(instance)
+        solution = prob_seed(instance, self.seed)
         for _ in range(self.numiter):
             solution = lloyd_iteration(solution)
         return solution
