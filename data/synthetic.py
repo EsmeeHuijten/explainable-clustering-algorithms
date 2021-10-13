@@ -1,7 +1,7 @@
 import random
 from functools import reduce
 import numpy as np
-from solverInterface import Instance
+from solver_interface import Instance
 
 
 # TODO: implement other synthetic clusterings, e.g.  centers in star and points with exp distribution

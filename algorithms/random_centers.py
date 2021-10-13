@@ -1,6 +1,6 @@
 import random
 
-from solverInterface import Output, Instance
+from solver_interface import Output, Instance
 
 
 class RandomCenters:

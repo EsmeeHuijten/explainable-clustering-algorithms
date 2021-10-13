@@ -7,7 +7,7 @@ from typing import Optional
 
 import numpy as np
 
-from solverInterface import Output, Instance
+from solver_interface import Output, Instance
 from util import dist, Point
 
 
