@@ -62,7 +62,7 @@ def medoid_bruteforce(assignment: Output, clusterpoints):
     @type Output: feasible solution of the k-median problem (NOT necessarily optimal)
     """
     cost = [sum([dist(point1, point2) for point2 in clusterpoints]) for point1 in clusterpoints]
-    return clusterpoints[np.argmin(cost)], min(cost)  # medoid, cost of medoid
+    return clusterpoints[np.argmin(cost)]
 
 
 # TODO: fix bug where a non-included point gets selected
@@ -73,7 +73,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     @type Output: feasible solution of the k-median problem (NOT necessarily optimal)
     """
     clusterassignment = assignment.clusters()
-    new_centers = [medoid_bruteforce(assignment, clusterpoints)[0] for center, clusterpoints \
+    new_centers = [medoid_bruteforce(assignment, clusterpoints) for center, clusterpoints \
                    in clusterassignment.items() if clusterpoints]
     return Output(assignment.instance, centers=new_centers)
 
