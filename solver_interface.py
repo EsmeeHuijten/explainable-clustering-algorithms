@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from util import Point
 
 
@@ -16,8 +18,8 @@ class Output:
     # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
     centers: list[Point]
-    assignment: dict[Point, Point] = field(init=False)
-    cost: float = field(init=False)
+    assignment: dict[Point, tuple[Point, np.float64]] = field(init=False)
+    cost: np.float64 = field(init=False)
 
     def __post_init__(self):
         self.assignment = {point: point.closest_center(self.centers) for point in self.instance.points}
