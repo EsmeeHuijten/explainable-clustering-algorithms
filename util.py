@@ -1,4 +1,6 @@
-from typing import Callable, Any
+from __future__ import annotations # allows us to use Point in type hints of Point methods. this will be default in Python 3.10
+
+from typing import Callable
 
 import numpy as np
 
@@ -7,7 +9,7 @@ class Point:
     def __init__(self, coordinates):
         self.coordinates = coordinates
 
-    def closest_center(self, centers: list) -> tuple[Any, np.float64]:
+    def closest_center(self, centers: list[Point]) -> tuple[Point, np.float64]:
         """
         Computes the closest center from the point and the distance to it
         @param centers: list of centers to check
