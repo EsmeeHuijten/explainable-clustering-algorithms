@@ -8,10 +8,11 @@ from solver_interface import Instance
 from util import Point
 
 
-def k_clusters(k: int, cluster_size: int = 10, spread: float = 0.3) -> Instance:
+def k_clusters(k: int, cluster_size: int = 10, spread: float = 0.3, instance_seed: int = 0) -> Instance:
     """
     returns an instance of k-th roots of unity with cluster_size many points around them
     """
+    random.seed(instance_seed)
     aux_poly = [1] + [0] * (k - 1) + [-1]
     roots = np.roots(aux_poly)
     centers = [Point(np.array([root.real, root.imag])) for root in roots]

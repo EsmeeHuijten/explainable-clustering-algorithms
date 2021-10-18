@@ -27,8 +27,8 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
     @param instance: instance of the k-median problem
     @param seed: optional seed for random choices
     """
-    if seed:
-        random.seed(seed)
+    if seed is not None:
+        np.random.seed(seed)
     centers = [np.random.choice(instance.points)]  # choose first center randomly
     for i in range(1, instance.k):
         distances_sq = np.array([point.closest_center(centers[0:i + 1])[1] ** 2 for point in instance.points])
@@ -64,7 +64,6 @@ def medoid_bruteforce(clusterpoints: list[Point]) -> Point:
     return clusterpoints[np.argmin(cost)]
 
 
-# TODO: fix bug where a non-included point gets selected
 def lloyd_iteration(assignment: Output) -> Output:
     """
     Execute one iteration of Lloyd's algorithm.
@@ -80,7 +79,8 @@ def lloyd_iteration(assignment: Output) -> Output:
 @dataclass
 class KMedPlusPlus:
     numiter: int = 1
-    seed: Optional[int] = None
+    seed: Optional[int] = 0
+    visualize: bool = False
 
     def __call__(self, instance: Instance) -> Output:
         """
@@ -90,4 +90,6 @@ class KMedPlusPlus:
         solution = prob_seed(instance, self.seed)
         for _ in range(self.numiter):
             solution = lloyd_iteration(solution)
+            if self.visualize:
+                visualization.clusterings.show_clusters(solution)
         return solution
