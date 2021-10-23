@@ -13,9 +13,9 @@ from util import dist, Point
 
 def random_seed(instance: Instance) -> Output:
     """
-    Choose the first assignment of centers.
-    As of now, the centers are chosen randomly.
+    Choose the first assignment of centers randomly.
     @param instance: instance of the k-median problem
+    @return: seeded solution (Output instance)
     """
     centers = random.sample(instance.points, instance.k)
     return Output(instance, centers=centers)
@@ -26,6 +26,7 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
     Choose the first assignment of centers using probabilistic seeding.
     @param instance: instance of the k-median problem
     @param seed: optional seed for random choices
+    @return: seeded solution (Output instance)
     """
     if seed is not None:
         np.random.seed(seed)
@@ -41,9 +42,10 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
 
 def closest_to_centroid(clusterpoints: list[Point]) -> Point:
     """
-    Given a cluster via clusters_indexes, this function computes the centroid of that cluster
+    Given a cluster, this function computes the centroid of that cluster
     and returns the point closest to the centroid.
     @param clusterpoints: all points of cluster in question
+    @return: the datapoint closest to the centroid of the cluster in question
     """
     cluster_points_x = [point.coordinates[0] for point in clusterpoints]
     cluster_points_y = [point.coordinates[1] for point in clusterpoints]
@@ -55,10 +57,10 @@ def closest_to_centroid(clusterpoints: list[Point]) -> Point:
 
 def medoid_bruteforce(clusterpoints: list[Point]) -> Point:
     """
-    Given a cluster via clusters_indexes, this function computes the medoid of that cluster
-    and returns the medoid as well as the "cost" of the medoid, which is the sum of distances from each
-    point in the cluster to the medoid. This function calculates the medoid with the brute force method.
+    Given a cluster, this function computes the medoid of that cluster
+    and returns it. This function calculates the medoid with the brute force method.
     @param clusterpoints: points of cluster in question
+    @return: medoid of the cluster in question
     """
     cost = [sum([dist(point1, point2) for point2 in clusterpoints]) for point1 in clusterpoints]
     return clusterpoints[np.argmin(cost)]
@@ -68,7 +70,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     """
     Execute one iteration of Lloyd's algorithm.
     @param assignment: current assignment of centers
-    @param return: feasible solution of the k-median problem (NOT necessarily optimal)
+    @return: feasible solution of the k-median problem (NOT necessarily optimal)
     """
     clusterassignment = assignment.clusters()
     new_centers = [medoid_bruteforce(clusterpoints) for center, clusterpoints
@@ -86,6 +88,7 @@ class KMedPlusPlus:
         """
         Solve a k-median problem with the k-median++ algorithm
         @param instance: instance of the k-median problem
+        @return: a solution to the k-median problem
         """
         solution = prob_seed(instance, self.seed)
         for _ in range(self.numiter):

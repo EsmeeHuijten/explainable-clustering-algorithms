@@ -15,6 +15,7 @@ class Instance:
 
 @dataclass
 class Output:
+    """represents a solution to the k-median problem"""
     # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
     centers: list[Point]

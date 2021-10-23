@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def show_clusters(output):
+    """
+    Plots datapoints, showing the centers and the clusters with a colourcode
+    @param output: a solution to the k-median problem
+    """
     k = len(output.centers)
     clusterpoints = output.clusters()
 

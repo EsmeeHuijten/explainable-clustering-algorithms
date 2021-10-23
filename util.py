@@ -6,6 +6,7 @@ import numpy as np
 
 
 class Point:
+    """represents a datapoint in a k-median problem instance"""
     def __init__(self, coordinates):
         self.coordinates = coordinates
 
@@ -22,5 +23,8 @@ class Point:
 def dist(p: Point, q: Point,
          _norm: Callable[[Point,
                           Point], np.float64] = np.linalg.norm) -> np.float64:  # putting np.linalg.norm as default argument avoids lookup of np at each call
-    """the standard Euclidean norm"""
+    """Calculates the standard Euclidean norm
+    @param p, q: points to calculate Euclidean distance between
+    @return: Euclidean distance between point p and point q
+    """
     return _norm(p.coordinates - q.coordinates)
