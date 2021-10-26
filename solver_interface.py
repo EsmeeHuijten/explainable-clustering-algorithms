@@ -30,9 +30,13 @@ class Output:
         return {center: [point for point in self.instance.points if self.assignment[point][0] == center] for center in
                 self.centers}
 
-
+@dataclass
 class DecisionTree:
-    pass
+    """
+    class representing decision/threshold trees
+    each element of the list cluster_bounds is an array with lower bound/upper bound pairs for each coordinate
+    """
+    cluster_bounds: list[np.ndarray]
 
 
 @dataclass
