@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from anytree import Node, RenderTree
 
 import numpy as np
 
@@ -37,8 +38,19 @@ class DecisionTree:
     each element of the list cluster_bounds is an array with lower bound/upper bound pairs for each coordinate
     """
     cluster_bounds: list[np.ndarray]
+    # root: Node
+    # nodes: list[Node]
+
 
 
 @dataclass
 class ExplainableOutput(Output):
+    instance: Instance
     decision_tree: DecisionTree
+
+    def clusters(self) -> dict[int, list[Point]]:
+        num_clusters_x = len(self.decision_tree.cluster_bounds[0])
+        num_clusters_y = len(self.decision_tree.cluster_bounds[1])
+        bounds = self.decision_tree.cluster_bounds
+        return {i+j*num_clusters_x: [point for point in self.instance.points if ( (bounds[0][i][0] <= point.coordinates[0] <= bounds[0][i][1]) \
+                and (bounds[1][j][0] <= point.coordinates <= bounds[1][j][1]) ) ] for i in range(num_clusters_x) for j in range(num_clusters_y)}
