@@ -46,7 +46,7 @@ class DecisionTree:
 
 
 @dataclass
-class ExplainableCenterOutput:
+class ExplainableOutput:
     instance: Instance
     decision_tree: DecisionTree
 

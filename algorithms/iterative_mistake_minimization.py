@@ -1,11 +1,40 @@
 from dataclasses import dataclass
 from typing import Optional
+from __future__ import annotations # allows us to use ClusterNode in type hints of ClusterNode methods. this will be default in Python 3.10
+
 
 import algorithms
-from solver_interface import Point, Instance, ExplainableCenterOutput, DecisionTree, CenterOutput
+from solver_interface import Point, Instance, ExplainableOutput, DecisionTree, CenterOutput
 import kmedplusplus
 import numpy as np
 
+@dataclass
+class IMM:
+    def __call__(self, instance) -> ExplainableOutput:
+        return pass
+
+
+
+@dataclass
+class ClusterNode:
+    clusters: dict[Point, list[Point]]
+    split: Optional[(int, float)] = None
+    children: list[ClusterNode] = []
+    def is_homogeneous(self):
+        return len(self.clusters.keys())==1
+    # TODO: implement this
+    def find_split(self):
+        return pass
+
+
+def build_tree(instance):
+    leaves = []
+
+    clusters = algorithms.kmedplusplus.KMedPlusPlus(instance).clusters()
+    root = ClusterNode(clusters)
+    rec_build_tree(root)
+    # TODO: figure out what this should return, adjust ExplainableOutput class if required
+    return leaves
 
 
 
@@ -13,32 +42,9 @@ def mistake(point: Point, center: Point, i, theta) -> bool:
     return (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta)
 
 
-@dataclass
-class ClusterNode:
-    clusters: dict[Point, list[Point]]
-    split: Optional[(int, float)] = None
-    children: List[ClusterNode] = []
-    def is_homogeneous(self):
-        return len(self.clusters.keys())==1
-    def find_split(self):
-
-
-
-
-
-def build_tree(data):
-    global leaves
-    leaves = []
-
-    clusters = algorithms.kmedplusplus(instance).clusters()
-    root = ClusterNode(clusters)
-    rec_build_tree(root)
-
-    return leaves
-
-
 def rec_build_tree(node: ClusterNode):
     if node.is_homogeneous():
+        global leaves
         leaves.append(node)
         return node
     else:
@@ -47,8 +53,6 @@ def rec_build_tree(node: ClusterNode):
         node.children = [node_L, node_R]
         rec_build_tree(node_L)
         rec_build_tree(node_R)
-
-
 
 
 
