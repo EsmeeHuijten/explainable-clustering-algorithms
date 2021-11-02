@@ -14,8 +14,10 @@ class Instance:
     k: int  # number of centers to be opened
 
 
+
+
 @dataclass
-class Output:
+class CenterOutput:
     """represents a solution to the k-median problem"""
     # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
@@ -44,10 +46,11 @@ class DecisionTree:
 
 
 @dataclass
-class ExplainableOutput(Output):
+class ExplainableCenterOutput:
     instance: Instance
     decision_tree: DecisionTree
 
+    # TODO: after algorithm returns tree, compute medoids and return clusters as dict[Point, list[Point]] as output type
     def clusters(self) -> dict[int, list[Point]]:
         num_clusters_x = len(self.decision_tree.cluster_bounds[0])
         num_clusters_y = len(self.decision_tree.cluster_bounds[1])

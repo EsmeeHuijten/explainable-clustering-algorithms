@@ -7,21 +7,21 @@ from typing import Optional
 
 import numpy as np
 
-from solver_interface import Output, Instance
+from solver_interface import CenterOutput, Instance
 from util import dist, Point
 
 
-def random_seed(instance: Instance) -> Output:
+def random_seed(instance: Instance) -> CenterOutput:
     """
     Choose the first assignment of centers randomly.
     @param instance: instance of the k-median problem
     @return: seeded solution (Output instance)
     """
     centers = random.sample(instance.points, instance.k)
-    return Output(instance, centers=centers)
+    return CenterOutput(instance, centers=centers)
 
 
-def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
+def prob_seed(instance: Instance, seed: Optional[int]) -> CenterOutput:
     """
     Choose the first assignment of centers using probabilistic seeding.
     @param instance: instance of the k-median problem
@@ -37,7 +37,7 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> Output:
         new_index = np.random.choice(np.arange(0, len(instance.points)),
                                      p=dists_sq_norm)  # np.random method needed for p argument!
         centers.append(instance.points[int(new_index)])
-    return Output(instance, centers=centers)
+    return CenterOutput(instance, centers=centers)
 
 
 def closest_to_centroid(clusterpoints: list[Point]) -> Point:
@@ -66,7 +66,7 @@ def medoid_bruteforce(clusterpoints: list[Point]) -> Point:
     return clusterpoints[np.argmin(cost)]
 
 
-def lloyd_iteration(assignment: Output) -> Output:
+def lloyd_iteration(assignment: CenterOutput) -> CenterOutput:
     """
     Execute one iteration of Lloyd's algorithm.
     @param assignment: current assignment of centers
@@ -75,7 +75,7 @@ def lloyd_iteration(assignment: Output) -> Output:
     clusterassignment = assignment.clusters()
     new_centers = [medoid_bruteforce(clusterpoints) for center, clusterpoints
                    in clusterassignment.items() if clusterpoints]
-    return Output(assignment.instance, centers=new_centers)
+    return CenterOutput(assignment.instance, centers=new_centers)
 
 
 @dataclass
@@ -84,7 +84,7 @@ class KMedPlusPlus:
     seed: Optional[int] = 0
     visualize: bool = False
 
-    def __call__(self, instance: Instance) -> Output:
+    def __call__(self, instance: Instance) -> CenterOutput:
         """
         Solve a k-median problem with the k-median++ algorithm
         @param instance: instance of the k-median problem

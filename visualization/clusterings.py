@@ -2,6 +2,8 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 
+# TODO: write show_explainable_clusters(explainableOutput)
+
 def show_clusters(output):
     """
     Plots datapoints, showing the centers and the clusters with a colourcode

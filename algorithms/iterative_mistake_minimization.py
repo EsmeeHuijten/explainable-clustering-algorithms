@@ -1,13 +1,61 @@
-from solver_interface import Point, Instance, ExplainableOutput, DecisionTree, Output
+from dataclasses import dataclass
+from typing import Optional
+
+import algorithms
+from solver_interface import Point, Instance, ExplainableCenterOutput, DecisionTree, CenterOutput
 import kmedplusplus
 import numpy as np
 
-def mistake(point, center, i, theta) -> int:
-    if (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta):
-        return 1
-    return 0
 
-def build_tree(refset: Output, y: list[Point]) -> DecisionTree:
+
+
+def mistake(point: Point, center: Point, i, theta) -> bool:
+    return (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta)
+
+
+@dataclass
+class ClusterNode:
+    clusters: dict[Point, list[Point]]
+    split: Optional[(int, float)] = None
+    children: List[ClusterNode] = []
+    def is_homogeneous(self):
+        return len(self.clusters.keys())==1
+    def find_split(self):
+
+
+
+
+
+def build_tree(data):
+    global leaves
+    leaves = []
+
+    clusters = algorithms.kmedplusplus(instance).clusters()
+    root = ClusterNode(clusters)
+    rec_build_tree(root)
+
+    return leaves
+
+
+def rec_build_tree(node: ClusterNode):
+    if node.is_homogeneous():
+        leaves.append(node)
+        return node
+    else:
+        i, theta, node_L, node_R = node.find_split()
+        node.split = i, theta
+        node.children = [node_L, node_R]
+        rec_build_tree(node_L)
+        rec_build_tree(node_R)
+
+
+
+
+
+
+
+
+def build_tree(refset: CenterOutput, y: list[Point]) -> DecisionTree:
     cluster_bounds_final = [[], []]
     cluster_bounds, L, R = make_node(refset, y)
     while L != None:
@@ -18,7 +66,7 @@ def build_tree(refset: Output, y: list[Point]) -> DecisionTree:
     #TODO: call make_node again for each L and each R that comes out of make_node
     return 0
 
-def make_node(refset: Output, y: list[Point]) -> list[float], list[Point], list[Point]:
+def make_node(refset: CenterOutput, y: list[Point]) -> list[float], list[Point], list[Point]:
     """"Looks for a tree-induced clustering that fits the labels y for this instance.
     @param refset: Our reference set of centers
     @param y:      List of closest center for each point
