@@ -1,15 +1,61 @@
-from solver_interface import Instance, ExplainableOutput, DecisionTree
+from solver_interface import Point, Instance, ExplainableOutput, DecisionTree, Output
 import kmedplusplus
+import numpy as np
 
-def build_tree(refset) -> DecisionTree:
+def mistake(point, center, i, theta) -> int:
+    if (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta):
+        return 1
+    return 0
 
-    tree = 0
-    return tree
+def build_tree(refset: Output, y: list[Point]) -> DecisionTree:
+    cluster_bounds_final = [[], []]
+    cluster_bounds, L, R = make_node(refset, y)
+    while L != None:
+        cluster_bounds_l, L_l, R_l = make_node(refset, L)
+        cluster_bounds_r, L_r, R_r = make_node(refset, R)
+        cluster_bounds_final[0] = cluster_bounds_final[0] + cluster_bounds[0]
+        cluster_bounds_final[1] = cluster_bounds_final[1] + cluster_bounds[1]
+    #TODO: call make_node again for each L and each R that comes out of make_node
+    return 0
+
+def make_node(refset: Output, y: list[Point]) -> list[float], list[Point], list[Point]:
+    """"Looks for a tree-induced clustering that fits the labels y for this instance.
+    @param refset: Our reference set of centers
+    @param y:      List of closest center for each point
+    @return:       Decision tree
+    """
+    x_coords = [point.coordinates[0] for point in refset.instance.points]
+    y_coords = [point.coordinates[1] for point in refset.instance.points]
+    x_min = min(x_coords)
+    x_max = max(x_coords)
+    y_min = min(y_coords)
+    y_max = max(y_coords)
+    #check for the case that the dataset is one big cluster
+    if y.count(y[0]) == len(y):
+        cluster_bounds = [[[x_min, x_max]], [[y_min, y_max]]]
+        return cluster_bounds, None, None
+    l = [min([point.coordinates[i] for point in y])for i in range(2)]
+    r = [max([point.coordinates[i] for point in y])for i in range(2)]
+    i_theta_list = [(i, point.coordinates[i]) for i in range(2) for point in refset.instance.points]
+    index = np.argmin([sum([mistake(x, mu, i, point.coordinates[i]) for x in refset.instance.points for mu in list(set(y))]) \
+             for i in range(2) for point in refset.instance.points if (l <= point.coordinates[i] <= r)])
+    (i, theta) = i_theta_list[index]
+    M = [point for point in refset.instance.points if (mistake(point, point.closest_center(refset.centers), i, theta) == 1)]
+    L = [point for point in refset.instance.points if (point.coordinates[i] <= theta and (j not in M))]
+    R = [point for point in refset.instance.points if (point.coordinates[i] > theta and (j not in M))]
+    if i == 0:
+        cluster_bounds = [[[x_min, theta], [theta, x_max]], [[y_min, y_max]]]
+    else:
+        cluster_bounds = [[[x_min, x_max]], [[y_min, theta], [theta, y_max]]]
+    return cluster_bounds, L, R
 
 class IMM:
+    #TODO: docstring
     def __call__(self,instance: Instance) -> ExplainableOutput:
         # get a reference set of k centers, we now use kmedplusplus for this
         solver = kmedplusplus.KMedPlusPlus(numiter=5)
         refset = solver(instance)
-        output = build_tree(refset)
+        y = [point.closest_center(refset.centers)[0] for point in refset.instance.points] #list of centers
+        output = build_tree(refset, y)
         return output
+
