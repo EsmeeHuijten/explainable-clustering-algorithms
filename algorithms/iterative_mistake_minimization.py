@@ -33,6 +33,7 @@ class ClusterNode:
 
     def centers(self):
         return self.clusters.keys()
+
     def dimension(self):
         return len(list(self.clusters.keys())[0].coordinates)
 
@@ -53,7 +54,8 @@ class ClusterNode:
                             l_i <= point.coordinates[i] <= r_i]
             point_coords.sort()
             # take the midpoint of consecutive coordinates to avoid equality issues
-            theta_candidates = [(a + b) / 2.0 for a, b in zip(point_coords, point_coords[1:])] # 2.0 to avoid integer division
+            theta_candidates = [(a + b) / 2.0 for a, b in
+                                zip(point_coords, point_coords[1:])]  # 2.0 to avoid integer division
             # TODO: implement the efficient way of counting mistakes while iterating over thetas
             brute_force_compute = [count_mistakes(i, theta) for theta in theta_candidates]
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
