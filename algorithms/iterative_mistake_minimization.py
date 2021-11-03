@@ -48,14 +48,12 @@ class ClusterNode:
             center_coords = [center.coordinates[i] for center in self.centers()]
             l_i, r_i = min(center_coords), max(center_coords)
 
-            print("l_i ", l_i, "r_i ", r_i)
             # iterate over all potential thetas
             point_coords = [point.coordinates[i] for l in self.clusters.values() for point in l if
                             l_i <= point.coordinates[i] <= r_i]
             point_coords.sort()
             # take the midpoint of consecutive coordinates to avoid equality issues
             theta_candidates = [(a + b) / 2.0 for a, b in zip(point_coords, point_coords[1:])] # 2.0 to avoid integer division
-            print("first ", theta_candidates[0], "last ",theta_candidates[-1])
             # TODO: implement the efficient way of counting mistakes while iterating over thetas
             brute_force_compute = [count_mistakes(i, theta) for theta in theta_candidates]
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
@@ -63,17 +61,13 @@ class ClusterNode:
 
         # compute best splits in each dimension
         split_candidates = [find_best_split_dim(i) for i in range(self.dimension())]
-        print(split_candidates)
         _, i, theta = min(split_candidates, key=lambda entry: entry[0])
-        print("actual theta", theta)
 
         # update clusters and bounds for children nodes
         node_L_centers = [center for center in self.centers() if center.coordinates[i] <= theta]
         node_L_clusters = {center: [point for point in self.clusters[center] if point.coordinates[i] <= theta] for
                            center in node_L_centers}
         node_L_bounds = self.bounds.copy()
-        print(self.bounds)
-        print(node_L_centers)
         node_L_bounds[i][1] = theta  # change upper bound to theta
         node_L = ClusterNode(node_L_clusters, node_L_bounds)
 
@@ -83,10 +77,6 @@ class ClusterNode:
         node_R_bounds = self.bounds.copy()
         node_R_bounds[i][0] = theta  # change lower bound to theta
         node_R = ClusterNode(node_R_clusters, node_R_bounds)
-
-        print("all centers: ", self.clusters.keys())
-        print("L centers: ", node_L_centers)
-        print("R centers: ", node_R_centers)
         return i, theta, node_L, node_R
 
 
