@@ -28,3 +28,29 @@ def dist(p: Point, q: Point,
     @return: Euclidean distance between point p and point q
     """
     return _norm(p.coordinates - q.coordinates)
+
+
+def closest_to_centroid(clusterpoints: list[Point]) -> Point:
+    """
+    Given a cluster, this function computes the centroid of that cluster
+    and returns the point closest to the centroid.
+    @param clusterpoints: all points of cluster in question
+    @return: the datapoint closest to the centroid of the cluster in question
+    """
+    cluster_points_x = [point.coordinates[0] for point in clusterpoints]
+    cluster_points_y = [point.coordinates[1] for point in clusterpoints]
+    centroid = Point((np.average(cluster_points_x), np.average(cluster_points_y)))
+    dists = [dist(point, centroid) for point in clusterpoints]
+    new_center = clusterpoints[np.argmin(dists)]
+    return new_center
+
+
+def medoid_bruteforce(clusterpoints: list[Point]) -> Point:
+    """
+    Given a cluster, this function computes the medoid of that cluster
+    and returns it. This function calculates the medoid with the brute force method.
+    @param clusterpoints: points of cluster in question
+    @return: medoid of the cluster in question
+    """
+    cost = [sum([dist(point1, point2) for point2 in clusterpoints]) for point1 in clusterpoints]
+    return clusterpoints[np.argmin(cost)]
