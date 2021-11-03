@@ -1,7 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 from __future__ import annotations # allows us to use ClusterNode in type hints of ClusterNode methods. this will be default in Python 3.10
 
+from math import inf
+from numpy import ndarray
 
 import algorithms
 from solver_interface import Point, Instance, ExplainableOutput, DecisionTree, CenterOutput
@@ -18,20 +20,36 @@ class IMM:
 @dataclass
 class ClusterNode:
     clusters: dict[Point, list[Point]]
+    bounds: ndarray # array of pairs (lower_bound, upper_bound) for each dimension
     split: Optional[(int, float)] = None
-    children: list[ClusterNode] = []
+    children: list[ClusterNode] = field(default_factory=list) # needed in order to get default value []
+
     def is_homogeneous(self):
         return len(self.clusters.keys())==1
-    # TODO: implement this
-    def find_split(self):
-        return pass
+
+    def find_split(self) -> (int, float, ClusterNode, ClusterNode):
+        # TODO: implement this
+        return i, theta, node_L, node_R
 
 
-def build_tree(instance):
+def build_tree(instance: Instance):
+    dim = instance.dimension()
     leaves = []
-
+    splits = []
     clusters = algorithms.kmedplusplus.KMedPlusPlus(instance).clusters()
-    root = ClusterNode(clusters)
+    root = ClusterNode(clusters, np.array([-inf, inf]*dim)) # initial bounds are -inf, inf
+
+    def rec_build_tree(node: ClusterNode):
+        if node.is_homogeneous():
+            leaves.append(node)
+        else:
+            i, theta, node_L, node_R = node.find_split()
+            node.split = i, theta
+            splits.append(node)
+            node.children = [node_L, node_R]
+            rec_build_tree(node_L)
+            rec_build_tree(node_R)
+
     rec_build_tree(root)
     # TODO: figure out what this should return, adjust ExplainableOutput class if required
     return leaves
@@ -42,17 +60,6 @@ def mistake(point: Point, center: Point, i, theta) -> bool:
     return (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta)
 
 
-def rec_build_tree(node: ClusterNode):
-    if node.is_homogeneous():
-        global leaves
-        leaves.append(node)
-        return node
-    else:
-        i, theta, node_L, node_R = node.find_split()
-        node.split = i, theta
-        node.children = [node_L, node_R]
-        rec_build_tree(node_L)
-        rec_build_tree(node_R)
 
 
 

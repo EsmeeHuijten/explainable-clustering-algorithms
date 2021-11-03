@@ -13,6 +13,9 @@ class Instance:
     points: list[Point]  # each point is np.array
     k: int  # number of centers to be opened
 
+    def dimension(self):
+        return len(self.points[0].coordinates)
+
 
 
 
