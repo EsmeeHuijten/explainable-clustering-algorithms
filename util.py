@@ -21,8 +21,7 @@ class Point:
 
 
 def dist(p: Point, q: Point,
-         _norm: Callable[[Point,
-                          Point], np.float64] = np.linalg.norm) -> np.float64:  # putting np.linalg.norm as default argument avoids lookup of np at each call
+         _norm: Callable[[Point], np.float64] = np.linalg.norm) -> np.float64:  # putting np.linalg.norm as default argument avoids lookup of np at each call
     """Calculates the standard Euclidean norm
     @param p, q: points to calculate Euclidean distance between
     @return: Euclidean distance between point p and point q

@@ -3,7 +3,7 @@ from __future__ import \
 
 from dataclasses import dataclass, field
 from math import inf
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 from numpy import ndarray
@@ -28,7 +28,7 @@ class IMM:
 class ClusterNode:
     clusters: dict[Point, list[Point]]
     bounds: ndarray  # array of arrays (lower_bound, upper_bound) for each dimension
-    split: Optional[(int, float)] = None
+    split: Optional[Tuple[int, float]] = None
     children: list[ClusterNode] = field(default_factory=list)  # needed in order to get default value []
 
     def centers(self):
@@ -40,7 +40,7 @@ class ClusterNode:
     def is_homogeneous(self):
         return len(self.clusters.keys()) == 1
 
-    def find_split(self) -> (int, float, ClusterNode, ClusterNode):
+    def find_split(self) -> Tuple[int, float, ClusterNode, ClusterNode]:
         def count_mistakes(i, theta):
             center_point_pairs = [(center, point) for center in self.centers() for point in self.clusters[center]]
             return sum(mistake(point, center, i, theta) for center, point in center_point_pairs), theta

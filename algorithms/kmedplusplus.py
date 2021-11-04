@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
+import visualization.clusterings
 
 from solver_interface import CenterOutput, Instance
 from util import medoid_bruteforce
