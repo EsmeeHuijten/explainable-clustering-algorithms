@@ -33,10 +33,10 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> CenterOutput:
         np.random.seed(seed)
     centers = [np.random.choice(instance.points)]  # choose first center randomly
     for i in range(1, instance.k):
-        distances_sq = np.array([point.closest_center(centers[0:i + 1])[1] ** 2 for point in instance.points])
-        dists_sq_norm = distances_sq / sum(distances_sq)
+        distances = np.array([point.closest_center(centers[0:i + 1])[1] for point in instance.points])
+        dists_norm = distances / sum(distances)
         new_index = np.random.choice(np.arange(0, len(instance.points)),
-                                     p=dists_sq_norm)  # np.random method needed for p argument!
+                                     p=dists_norm)  # np.random method needed for p argument!
         centers.append(instance.points[int(new_index)])
     return CenterOutput(instance, centers=centers)
 
@@ -55,6 +55,7 @@ def lloyd_iteration(assignment: CenterOutput) -> CenterOutput:
 
 @dataclass
 class KMedPlusPlus:
+    """"Solver for the k-median problem that uses the k-median++ method"""
     numiter: int = 1
     seed: Optional[int] = 0
     visualize: bool = False

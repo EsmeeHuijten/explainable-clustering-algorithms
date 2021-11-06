@@ -9,4 +9,4 @@ instance = data.mall.conversion.get_instance(k=5, parameters=mall_parameters)
 solver = algorithms.iterative_mistake_minimization.IMM()
 output = solver(instance)
 # TODO: replace by show_explainable_clusters
-visualization.clusterings.show_clusters(output)
+visualization.clusterings.show_explainable_clusters(output)
