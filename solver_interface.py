@@ -2,13 +2,12 @@ from __future__ import \
     annotations  # allows us to use ClusterNode in type hints of ClusterNode methods. this will be default in Python 3.10
 
 from dataclasses import dataclass, field
-from anytree import Node, RenderTree
-
+from math import inf
 import numpy as np
 from numpy import ndarray
 from typing import Optional, Tuple
 # from algorithms.iterative_mistake_minimization import ClusterNode
-from util import Point, medoid_bruteforce
+from util import Point, medoid_bruteforce, dist
 
 
 @dataclass
@@ -78,6 +77,24 @@ class ClusterNode:
             brute_force_compute = [count_mistakes(i, theta) for theta in theta_candidates]
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
             return min_mistakes, i, best_theta
+
+        def find_best_split_dim_efficient(i):
+            print("inside efficient splitting")
+            best_cost = inf
+            best_threshold = None
+            point_coords = [point for l in self.clusters.values() for point in l]
+            print(len(point_coords))
+            mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
+            mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
+            cost = sum([dist(point, mu2[0]) for point in point_coords])
+
+            for j in range(len(point_coords)-1):
+                print("j", j)
+                cost = cost + dist(point_coords[j], mu1[j]) - dist(point_coords[j], mu2[j-1])
+                if cost < best_cost and point_coords[j].coordinates[i] != point_coords[j+1].coordinates[i]:
+                    best_cost = cost
+                    best_threshold = point_coords[j].coordinates[i]
+            return best_cost, i, best_threshold
 
         # compute best splits in each dimension
         split_candidates = [find_best_split_dim(i) for i in range(self.dimension())]
