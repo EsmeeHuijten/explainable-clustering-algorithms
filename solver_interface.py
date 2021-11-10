@@ -78,15 +78,16 @@ class ClusterNode:
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
             return min_mistakes, i, best_theta
 
-        def find_best_split_dim_efficient(i):
+        def find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost):
             print("inside efficient splitting")
             best_cost = inf
             best_threshold = None
-            point_coords = [point for l in self.clusters.values() for point in l]
-            print(len(point_coords))
-            mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
-            mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
-            cost = sum([dist(point, mu2[0]) for point in point_coords])
+
+            # print(len(point_coords))
+
+            # mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
+            # mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
+
 
             for j in range(len(point_coords)-1):
                 print("j", j)
@@ -95,6 +96,17 @@ class ClusterNode:
                     best_cost = cost
                     best_threshold = point_coords[j].coordinates[i]
             return best_cost, i, best_threshold
+
+        # some pre-calculations for dynamic programming
+        # point_coords = [point for l in self.clusters.values() for point in l]
+        # mu1 = [Point([np.median([point.coordinates[0] for point in point_coords[:j]]), \
+        #               np.median([point.coordinates[1] for point in point_coords[:j]])]) \
+        #        for j in range(1, len(point_coords))]
+        # mu2 = [Point([np.median([point.coordinates[0] for point in point_coords[j:]]), \
+        #               np.median([point.coordinates[1] for point in point_coords[j:]])]) \
+        #        for j in range(len(point_coords))]
+        # cost = sum([dist(point, mu2[0]) for point in point_coords])
+        # find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost)
 
         # compute best splits in each dimension
         split_candidates = [find_best_split_dim(i) for i in range(self.dimension())]
