@@ -135,6 +135,7 @@ class ExplainableOutput:
     leaves: list[ClusterNode]
     split_nodes: list[ClusterNode]
     medoids: Optional[list[Point]] = None
+    # TODO: add field pre_clusters, refactor
 
     def __post_init__(self):
         self.clusters = self.clusters()
