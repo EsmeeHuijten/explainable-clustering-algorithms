@@ -52,7 +52,7 @@ class ClusterNode:
         return self.clusters.keys()
 
     def dimension(self):
-        return len(list(self.clusters.keys())[0].coordinates)
+        return len(self.bounds) #len(list(self.clusters.keys())[0].coordinates)
 
     def is_homogeneous(self):
         return len(self.clusters.keys()) == 1
@@ -60,7 +60,7 @@ class ClusterNode:
     def find_split(self) -> Tuple[int, float, ClusterNode, ClusterNode]:
         def count_mistakes(i, theta):
             center_point_pairs = [(center, point) for center in self.centers() for point in self.clusters[center]]
-            return sum(mistake(point, center, i, theta) for center, point in center_point_pairs), theta
+            return sum(mistake(point, center, i, theta) for center, point in center_point_pairs)
 
         def find_best_split_dim(i):
             center_coords = [center.coordinates[i] for center in self.centers()]
@@ -74,7 +74,7 @@ class ClusterNode:
             theta_candidates = [(a + b) / 2.0 for a, b in
                                 zip(point_coords, point_coords[1:])]  # 2.0 to avoid integer division
             # TODO: implement the efficient way of counting mistakes while iterating over thetas
-            brute_force_compute = [count_mistakes(i, theta) for theta in theta_candidates]
+            brute_force_compute = [(count_mistakes(i,theta), theta) for theta in theta_candidates]
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
             return min_mistakes, i, best_theta
 
