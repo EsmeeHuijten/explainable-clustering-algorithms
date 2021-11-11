@@ -19,10 +19,10 @@ class IMM:
         @param instance: instance of the k-median problem
         @return: an explainable solution to the k-median problem
         """
-        leaves, split_nodes = build_tree(instance)
+        leaves, split_nodes, preclusters = build_tree(instance)
 
         # TODO: let this actually return ExplainableOutput. it currently
-        return ExplainableOutput(instance, leaves, split_nodes)
+        return ExplainableOutput(instance, leaves, split_nodes), preclusters
 
         # centers = [medoid_bruteforce(list(node.clusters.values())[0]) for node in
         #            leaves]  # for each leaf node, get list of points in (only) cluster
@@ -32,8 +32,8 @@ def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPl
     dim = instance.dimension()
     leaves = []
     split_nodes = []
-    clusters = pre_solver(instance).clusters()
-    root = ClusterNode(clusters, np.array([[-inf, inf]] * dim))  # initial bounds are -inf, inf
+    pre_clusters = pre_solver(instance).clusters()
+    root = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim))  # initial bounds are -inf, inf
 
     def rec_build_tree(node: ClusterNode):
         if node.is_homogeneous():
@@ -48,4 +48,4 @@ def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPl
 
     rec_build_tree(root)
     # TODO: figure out what this should return, adjust ExplainableOutput class if required
-    return leaves, split_nodes
+    return leaves, split_nodes, pre_clusters
