@@ -1,12 +1,12 @@
-from __future__ import annotations # allows us to use Point in type hints of Point methods. this will be default in Python 3.10
-
-from typing import Callable
+from __future__ import \
+    annotations  # allows us to use Point in type hints of Point methods. this will be default in Python 3.10
 
 import numpy as np
 
 
 class Point:
     """represents a datapoint in a k-median problem instance"""
+
     def __init__(self, coordinates):
         self.coordinates = coordinates
 
@@ -20,13 +20,12 @@ class Point:
         return centers[np.argmin(dists)], min(dists)
 
 
-def dist(p: Point, q: Point,
-         _norm: Callable[[Point], np.float64] = np.linalg.norm) -> np.float64:  # putting np.linalg.norm as default argument avoids lookup of np at each call
-    """Calculates the standard Euclidean norm
+def dist(p: Point, q: Point) -> np.float64:
+    """Calculates the 1-norm
     @param p, q: points to calculate Euclidean distance between
     @return: Euclidean distance between point p and point q
     """
-    return _norm(p.coordinates - q.coordinates)
+    return np.float64(np.linalg.norm(p.coordinates - q.coordinates, ord=1))
 
 
 def closest_to_centroid(clusterpoints: list[Point]) -> Point:
