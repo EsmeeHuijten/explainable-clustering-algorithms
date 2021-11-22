@@ -46,6 +46,7 @@ class ClusterNode:
     clusters: dict[Point, list[Point]]
     bounds: ndarray  # array of arrays (lower_bound, upper_bound) for each dimension
     split: Optional[Tuple[int, float]] = None
+    set: Optional[list[Point]]
     children: list[ClusterNode] = field(default_factory=list)  # needed in order to get default value []
 
     def centers(self):
@@ -78,24 +79,24 @@ class ClusterNode:
             min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
             return min_mistakes, i, best_theta
 
-        def find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost):
-            print("inside efficient splitting")
-            best_cost = inf
-            best_threshold = None
-
-            # print(len(point_coords))
-
-            # mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
-            # mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
-
-
-            for j in range(len(point_coords)-1):
-                print("j", j)
-                cost = cost + dist(point_coords[j], mu1[j]) - dist(point_coords[j], mu2[j-1])
-                if cost < best_cost and point_coords[j].coordinates[i] != point_coords[j+1].coordinates[i]:
-                    best_cost = cost
-                    best_threshold = point_coords[j].coordinates[i]
-            return best_cost, i, best_threshold
+        # def find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost):
+        #     print("inside efficient splitting")
+        #     best_cost = inf
+        #     best_threshold = None
+        #
+        #     # print(len(point_coords))
+        #
+        #     # mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
+        #     # mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
+        #
+        #
+        #     for j in range(len(point_coords)-1):
+        #         print("j", j)
+        #         cost = cost + dist(point_coords[j], mu1[j]) - dist(point_coords[j], mu2[j-1])
+        #         if cost < best_cost and point_coords[j].coordinates[i] != point_coords[j+1].coordinates[i]:
+        #             best_cost = cost
+        #             best_threshold = point_coords[j].coordinates[i]
+        #     return best_cost, i, best_threshold
 
         # some pre-calculations for dynamic programming
         # point_coords = [point for l in self.clusters.values() for point in l]
