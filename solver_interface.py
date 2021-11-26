@@ -45,8 +45,8 @@ class ClusterNode:
     """represents a node in an explainable tree solution to the k-median problem"""
     clusters: dict[Point, list[Point]]
     bounds: ndarray  # array of arrays (lower_bound, upper_bound) for each dimension
-    split: Optional[Tuple[int, float]] = None
     set: Optional[list[Point]]
+    split: Optional[Tuple[int, float]] = None
     children: list[ClusterNode] = field(default_factory=list)  # needed in order to get default value []
 
     def centers(self):
