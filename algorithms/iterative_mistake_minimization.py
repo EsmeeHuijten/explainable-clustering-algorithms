@@ -1,5 +1,5 @@
 from __future__ import \
-    annotations  # allows us to use ClusterNode in type hints of ClusterNode methods. this will be default in Python 3.10
+    annotations  # allows us to use ClusterNode in type hints, which will be default in Python 3.10
 
 from dataclasses import dataclass, field
 from math import inf
@@ -7,7 +7,7 @@ from math import inf
 import numpy as np
 
 import algorithms.kmedplusplus
-from solver_interface import Point, Instance, CenterOutput, ExplainableOutput, ClusterNode
+from solver_interface import Instance, ExplainableOutput, ClusterNode
 
 @dataclass
 class IMM:
@@ -21,12 +21,8 @@ class IMM:
         """
         leaves, split_nodes, preclusters = build_tree(instance)
 
-        # TODO: let this actually return ExplainableOutput. it currently
-        return ExplainableOutput(instance, leaves, split_nodes), preclusters
+        return ExplainableOutput(instance, leaves, split_nodes, preclusters)
 
-        # centers = [medoid_bruteforce(list(node.clusters.values())[0]) for node in
-        #            leaves]  # for each leaf node, get list of points in (only) cluster
-        # return CenterOutput(instance, centers)
 
 def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPlus(numiter=5)):
     dim = instance.dimension()
@@ -47,5 +43,4 @@ def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPl
             rec_build_tree(node_R)
 
     rec_build_tree(root)
-    # TODO: figure out what this should return, adjust ExplainableOutput class if required
     return leaves, split_nodes, pre_clusters

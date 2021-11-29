@@ -1,13 +1,12 @@
 from __future__ import \
-    annotations  # allows us to use ClusterNode in type hints of ClusterNode methods. this will be default in Python 3.10
+    annotations  # from algorithms.iterative_mistake_minimization import ClusterNode
 
 from dataclasses import dataclass, field
 from math import inf
 import numpy as np
 from numpy import ndarray
 from typing import Optional, Tuple
-# from algorithms.iterative_mistake_minimization import ClusterNode
-from util import Point, medoid_bruteforce, dist
+from util import Point, median_coordinatewise
 
 
 @dataclass
@@ -20,10 +19,10 @@ class Instance:
     def dimension(self):
         return len(self.points[0].coordinates)
 
+
 @dataclass
 class CenterOutput:
     """represents a solution to the k-median problem"""
-    # TODO: how to implement Output? centers, clusters, decision tree? Separate class for explainable clusterings?
     instance: Instance
     centers: list[Point]
     assignment: dict[Point, tuple[Point, np.float64]] = field(init=False)
@@ -37,23 +36,25 @@ class CenterOutput:
         return {center: [point for point in self.instance.points if self.assignment[point][0] == center] for center in
                 self.centers}
 
+
 def mistake(point: Point, center: Point, i, theta) -> bool:
     return (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta)
+
 
 @dataclass
 class ClusterNode:
     """represents a node in an explainable tree solution to the k-median problem"""
     clusters: dict[Point, list[Point]]
     bounds: ndarray  # array of arrays (lower_bound, upper_bound) for each dimension
-    set: Optional[list[Point]]
+    set: list[Point] = field(default_factory=list) #list of centers belonging to node, default value []
     split: Optional[Tuple[int, float]] = None
-    children: list[ClusterNode] = field(default_factory=list)  # needed in order to get default value []
+    children: list[ClusterNode] = field(default_factory=list)  # default value []
 
     def centers(self):
         return self.clusters.keys()
 
     def dimension(self):
-        return len(self.bounds) #len(list(self.clusters.keys())[0].coordinates)
+        return len(self.bounds)
 
     def is_homogeneous(self):
         return len(self.clusters.keys()) == 1
@@ -112,22 +113,33 @@ class ClusterNode:
         # compute best splits in each dimension
         split_candidates = [find_best_split_dim(i) for i in range(self.dimension())]
         _, i, theta = min(split_candidates, key=lambda entry: entry[0])
-
-        # update clusters and bounds for children nodes
-        node_L_centers = [center for center in self.centers() if center.coordinates[i] <= theta]
-        node_L_clusters = {center: [point for point in self.clusters[center] if point.coordinates[i] <= theta] for
-                           center in node_L_centers}
-        node_L_bounds = self.bounds.copy()
-        node_L_bounds[i][1] = theta  # change upper bound to theta
-        node_L = ClusterNode(node_L_clusters, node_L_bounds)
-
-        node_R_centers = [center for center in self.centers() if center.coordinates[i] > theta]
-        node_R_clusters = {center: [point for point in self.clusters[center] if point.coordinates[i] > theta] for
-                           center in node_R_centers}
-        node_R_bounds = self.bounds.copy()
-        node_R_bounds[i][0] = theta  # change lower bound to theta
-        node_R = ClusterNode(node_R_clusters, node_R_bounds)
+        node_L, node_R = make_kids(self, i, theta)
         return i, theta, node_L, node_R
+
+def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
+    # update clusters and bounds for children nodes
+    node_L_centers = [center for center in node.centers() if center.coordinates[i] <= theta]
+    node_L_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] <= theta] for
+                       center in node_L_centers}
+    if useEsfandiari:
+        node_L_X = node_L_centers
+    else:
+        node_L_X = node_L_centers + list(node_L_clusters.values())
+    node_L_bounds = node.bounds.copy()
+    node_L_bounds[i][1] = theta  # change upper bound to theta
+    node_L = ClusterNode(node_L_clusters, node_L_bounds, node_L_X)
+
+    node_R_centers = [center for center in node.centers() if center.coordinates[i] > theta]
+    node_R_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] > theta] for
+                       center in node_R_centers}
+    if useEsfandiari:
+        node_R_X = node_R_centers
+    else:
+        node_R_X = node_R_centers + list(node_R_clusters.values())
+    node_R_bounds = node.bounds.copy()
+    node_R_bounds[i][0] = theta  # change lower bound to theta
+    node_R = ClusterNode(node_R_clusters, node_R_bounds, node_R_X)
+    return node_L, node_R
 
 @dataclass
 class ExplainableOutput:
@@ -135,16 +147,16 @@ class ExplainableOutput:
     instance: Instance
     leaves: list[ClusterNode]
     split_nodes: list[ClusterNode]
-    medoids: Optional[list[Point]] = None
+    pre_clusters: dict[Point, list[Point]]
+    medians: Optional[list[Point]] = None
     # TODO: add field pre_clusters, refactor
 
     def __post_init__(self):
         self.clusters = self.clusters()
 
-    # # TODO: after algorithm returns tree, compute medoids and return clusters as dict[Point, list[Point]] as output type
     def clusters(self) -> dict[int, list[Point]]:
-        self.medoids = [medoid_bruteforce(list(node.clusters.values())[0]) for node in
-                   self.leaves]  # for each leaf node, get list of points in (only) cluster
-        assignment = {point: point.closest_center(self.medoids) for point in self.instance.points}
+        self.medians = [median_coordinatewise(list(node.clusters.values())[0]) for node in
+                        self.leaves]  # for each leaf node, get list of points in (only) cluster
+        assignment = {point: point.closest_center(self.medians) for point in self.instance.points}
         return {center: [point for point in self.instance.points if assignment[point][0] == center] for center in
-                self.medoids}
+                self.medians}

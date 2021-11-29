@@ -5,13 +5,12 @@ from solver_interface import CenterOutput, ExplainableOutput
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 
-def show_explainable_clusters(output: ExplainableOutput, pre_clusters):
+def show_explainable_clusters(output: ExplainableOutput):
     """
-    Plots datapoints, showing the clusters with a colourcode
+    Plots data points, showing the clusters with a colour-code
     @param output: an explainable solution to the k-median problem
     """
-    k = len(output.medoids)
-    clusterpoints = output.clusters
+    k = len(output.medians)
 
     colors = cm.rainbow(np.linspace(0, 1, k))  # get a selection of evenly distributed colors
 
@@ -34,13 +33,13 @@ def show_explainable_clusters(output: ExplainableOutput, pre_clusters):
         # plt.vlines(xminc, yminc, ymaxc, color='black')
         # plt.vlines(xmaxc, yminc, ymaxc, color='black')
         for j in range(k):
-            current_center = list(pre_clusters.keys())[j]
+            current_center = list(output.pre_clusters.keys())[j]
             if xminc < current_center.coordinates[0]<xmaxc and yminc < current_center.coordinates[1] < ymaxc:
-                x=[point.coordinates[0] for point in pre_clusters[current_center]]
-                y=[point.coordinates[1] for point in pre_clusters[current_center]]
+                x=[point.coordinates[0] for point in output.pre_clusters[current_center]]
+                y=[point.coordinates[1] for point in output.pre_clusters[current_center]]
 
-        #x = [point.coordinates[0] for point in list(pre_clusters.values())[i]]
-        #y = [point.coordinates[1] for point in list(pre_clusters.values())[i]]#clusterpoints[output.medoids[i]]]
+        #x = [point.coordinates[0] for point in list(output.pre_clusters.values())[i]]
+        #y = [point.coordinates[1] for point in list(output.pre_clusters.values())[i]]#clusterpoints[output.medoids[i]]]
         plt.scatter(x, y, color=colors[i])
 
     plt.show()
