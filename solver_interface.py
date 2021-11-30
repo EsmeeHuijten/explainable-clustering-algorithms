@@ -58,7 +58,7 @@ class ClusterNode:
 
     def is_homogeneous(self):
         return len(self.clusters.keys()) == 1
-
+#TODO: put find_split in IMM algorithm
     def find_split(self) -> Tuple[int, float, ClusterNode, ClusterNode]:
         def count_mistakes(i, theta):
             center_point_pairs = [(center, point) for center in self.centers() for point in self.clusters[center]]
