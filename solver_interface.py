@@ -149,7 +149,6 @@ class ExplainableOutput:
     split_nodes: list[ClusterNode]
     pre_clusters: dict[Point, list[Point]]
     medians: Optional[list[Point]] = None
-    # TODO: add field pre_clusters, refactor
 
     def __post_init__(self):
         self.clusters = self.clusters()
@@ -160,3 +159,4 @@ class ExplainableOutput:
         assignment = {point: point.closest_center(self.medians) for point in self.instance.points}
         return {center: [point for point in self.instance.points if assignment[point][0] == center] for center in
                 self.medians}
+    # TODO: implement cost()

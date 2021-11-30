@@ -13,6 +13,10 @@ from solver_interface import Instance, ExplainableOutput, ClusterNode
 class IMM:
     """"Solver for the k-median problem that uses the iterative mistake minimization method, that solves the
     k-median problem with an explainable solution."""
+    @staticmethod
+    def name():
+        return "IMM"
+    # TODO: refactor to __call__(self, instance, preclusters)
     def __call__(self, instance):
         """
         Solve a k-median problem with the iterative mistake minimization algorithm
