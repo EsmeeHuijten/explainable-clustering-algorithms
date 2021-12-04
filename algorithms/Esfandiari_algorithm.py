@@ -14,23 +14,24 @@ from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids
 class EsfandiariAlgorithm:
     """"Solver for the k-median problem that uses the method proposed by Makarychev et al, that solves the
     k-median problem with an explainable solution."""
-
-    def __call__(self, instance):
+    @staticmethod
+    def name():
+        return "EsfandiariAlgorithm"
+    def __call__(self, instance, pre_clusters):
         """
         Solve a k-median problem with the method proposed by Makarychev et al
         @param instance: instance of the k-median problem
         @return: an explainable solution to the k-median problem
         """
-        leaves, split_nodes, preclusters = build_tree(instance)
+        leaves, split_nodes = build_tree(instance, pre_clusters)
 
-        return ExplainableOutput(instance, leaves, split_nodes, preclusters)
+        return ExplainableOutput(instance, leaves, split_nodes, pre_clusters)
 
 
-def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPlus(numiter=5)):
+def build_tree(instance: Instance, pre_clusters: dict):
     dim = instance.dimension()
     X = instance.points
-    pre_solution = pre_solver(instance)
-    u0 = ClusterNode(pre_solution.clusters(), np.array([[-inf, inf]] * dim), pre_solution.centers)  # root
+    u0 = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim), list(pre_clusters.keys()))  # root
     leaves = []
     split_nodes = []
 
@@ -55,5 +56,5 @@ def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPl
 
     if not u0.is_homogeneous():
         median_split(u0)
-    return leaves, split_nodes, pre_solution.clusters()
+    return leaves, split_nodes
 

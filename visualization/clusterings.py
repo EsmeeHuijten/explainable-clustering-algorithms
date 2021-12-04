@@ -10,7 +10,7 @@ def show_explainable_clusters(output: ExplainableOutput):
     Plots datapoints, showing the clusters with a colourcode
     @param output: an explainable solution to the k-median problem
     """
-    k = len(output.medoids)
+    k = len(output.medians)
     clusterpoints = output.clusters
 
     colors = cm.rainbow(np.linspace(0, 1, k))  # get a selection of evenly distributed colors
@@ -22,8 +22,8 @@ def show_explainable_clusters(output: ExplainableOutput):
 
     fig, ax = plt.subplots()
     for i in range(k):
-        x = [point.coordinates[0] for point in clusterpoints[output.medoids[i]]]
-        y = [point.coordinates[1] for point in clusterpoints[output.medoids[i]]]
+        x = [point.coordinates[0] for point in clusterpoints[output.medians[i]]]
+        y = [point.coordinates[1] for point in clusterpoints[output.medians[i]]]
         plt.scatter(x, y, color=colors[i])
         bounds = output.leaves[i].bounds
         xminc, xmaxc, yminc, ymaxc = max(bounds[0][0], xmin), min(bounds[0][1], xmax), max(bounds[1][0], ymin), \

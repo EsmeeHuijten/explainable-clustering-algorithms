@@ -27,7 +27,6 @@ def dist(p: Point, q: Point) -> np.float64:
     """
     return np.float64(np.linalg.norm(p.coordinates - q.coordinates, ord=1))
 
-# TODO: implement computation of coordinate-wise median (and use it wherever necessary)
 
 def closest_to_centroid(clusterpoints: list[Point]) -> Point:
     """
@@ -53,6 +52,7 @@ def medoid_bruteforce(clusterpoints: list[Point]) -> Point:
     """
     cost = [sum([dist(point1, point2) for point2 in clusterpoints]) for point1 in clusterpoints]
     return clusterpoints[np.argmin(cost)]
+
 
 def median_coordinatewise(clusterpoints: list[Point]) -> Point:
     """

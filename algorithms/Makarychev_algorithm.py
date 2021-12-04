@@ -14,27 +14,29 @@ from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids
 class MakarychevAlgorithm:
     """"Solver for the k-median problem that uses the method proposed by Makarychev et al, that solves the
     k-median problem with an explainable solution."""
-    def __call__(self, instance):
+    @staticmethod
+    def name():
+        return "MakarychevAlgorithm"
+    def __call__(self, instance, pre_clusters):
         """
         Solve a k-median problem with the method proposed by Makarychev et al
         @param instance: instance of the k-median problem
         @return: an explainable solution to the k-median problem
         """
-        leaves, split_nodes, preclusters = build_tree(instance)
+        leaves, split_nodes = build_tree(instance, pre_clusters)
 
-        return ExplainableOutput(instance, leaves, split_nodes, preclusters)
+        return ExplainableOutput(instance, leaves, split_nodes, pre_clusters)
 
 
-def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPlus(numiter=5)):
+def build_tree(instance: Instance, pre_clusters: dict):
     dim = instance.dimension()
     X = instance.points
     leaves = []
     split_nodes = []
-    pre_solution = pre_solver(instance)
-    centers = list(pre_solution.centers)
+    centers = list(pre_clusters.keys())
     k = len(centers)
     Xr = X + centers
-    T0 = ClusterNode(pre_solution.clusters(), np.array([[-inf, inf]] * dim), Xr) #root
+    T0 = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim), Xr) #root
 
     def rec_build_tree(T: ClusterNode):
         if T.is_homogeneous():
@@ -69,7 +71,7 @@ def build_tree(instance: Instance, pre_solver=algorithms.kmedplusplus.KMedPlusPl
             rec_build_tree(node_R)
 
     rec_build_tree(T0)
-    return leaves, split_nodes, pre_solution.clusters()
+    return leaves, split_nodes
 
 
 def mu(S: ndarray):

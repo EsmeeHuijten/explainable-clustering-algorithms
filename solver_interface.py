@@ -6,7 +6,7 @@ from math import inf
 import numpy as np
 from numpy import ndarray
 from typing import Optional, Tuple
-from util import Point, median_coordinatewise
+from util import Point, median_coordinatewise, dist
 
 
 @dataclass
@@ -36,9 +36,10 @@ class CenterOutput:
         return {center: [point for point in self.instance.points if self.assignment[point][0] == center] for center in
                 self.centers}
 
-
-def mistake(point: Point, center: Point, i, theta) -> bool:
-    return (point.coordinates[i] <= theta) != (center.coordinates[i] <= theta)
+    # def cost(self) -> float:
+    #     clusters = self.clusters()
+    #     cost = sum([sum([dist(center, point) for point in clusters[center]]) for center in list(clusters.keys())])
+    #     return cost
 
 
 @dataclass
@@ -58,63 +59,7 @@ class ClusterNode:
 
     def is_homogeneous(self):
         return len(self.clusters.keys()) == 1
-#TODO: put find_split in IMM algorithm
-    def find_split(self) -> Tuple[int, float, ClusterNode, ClusterNode]:
-        def count_mistakes(i, theta):
-            center_point_pairs = [(center, point) for center in self.centers() for point in self.clusters[center]]
-            return sum(mistake(point, center, i, theta) for center, point in center_point_pairs)
 
-        def find_best_split_dim(i):
-            center_coords = [center.coordinates[i] for center in self.centers()]
-            l_i, r_i = min(center_coords), max(center_coords)
-
-            # iterate over all potential thetas
-            point_coords = [point.coordinates[i] for l in self.clusters.values() for point in l if
-                            l_i <= point.coordinates[i] <= r_i]
-            point_coords.sort()
-            # take the midpoint of consecutive coordinates to avoid equality issues
-            theta_candidates = [(a + b) / 2.0 for a, b in
-                                zip(point_coords, point_coords[1:])]  # 2.0 to avoid integer division
-            # TODO: implement the efficient way of counting mistakes while iterating over thetas
-            brute_force_compute = [(count_mistakes(i,theta), theta) for theta in theta_candidates]
-            min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
-            return min_mistakes, i, best_theta
-
-        # def find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost):
-        #     print("inside efficient splitting")
-        #     best_cost = inf
-        #     best_threshold = None
-        #
-        #     # print(len(point_coords))
-        #
-        #     # mu1 = [medoid_bruteforce(point_coords[:j]) for j in range(1, len(point_coords))]
-        #     # mu2 = [medoid_bruteforce(point_coords[j:]) for j in range(len(point_coords))]
-        #
-        #
-        #     for j in range(len(point_coords)-1):
-        #         print("j", j)
-        #         cost = cost + dist(point_coords[j], mu1[j]) - dist(point_coords[j], mu2[j-1])
-        #         if cost < best_cost and point_coords[j].coordinates[i] != point_coords[j+1].coordinates[i]:
-        #             best_cost = cost
-        #             best_threshold = point_coords[j].coordinates[i]
-        #     return best_cost, i, best_threshold
-
-        # some pre-calculations for dynamic programming
-        # point_coords = [point for l in self.clusters.values() for point in l]
-        # mu1 = [Point([np.median([point.coordinates[0] for point in point_coords[:j]]), \
-        #               np.median([point.coordinates[1] for point in point_coords[:j]])]) \
-        #        for j in range(1, len(point_coords))]
-        # mu2 = [Point([np.median([point.coordinates[0] for point in point_coords[j:]]), \
-        #               np.median([point.coordinates[1] for point in point_coords[j:]])]) \
-        #        for j in range(len(point_coords))]
-        # cost = sum([dist(point, mu2[0]) for point in point_coords])
-        # find_best_split_dim_efficient(i, point_coords, mu1, mu2, cost)
-
-        # compute best splits in each dimension
-        split_candidates = [find_best_split_dim(i) for i in range(self.dimension())]
-        _, i, theta = min(split_candidates, key=lambda entry: entry[0])
-        node_L, node_R = make_kids(self, i, theta)
-        return i, theta, node_L, node_R
 
 def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     # update clusters and bounds for children nodes
@@ -159,4 +104,7 @@ class ExplainableOutput:
         assignment = {point: point.closest_center(self.medians) for point in self.instance.points}
         return {center: [point for point in self.instance.points if assignment[point][0] == center] for center in
                 self.medians}
-    # TODO: implement cost()
+
+    def cost(self) -> float:
+        cost = sum([sum([dist(center, point) for point in self.clusters[center]]) for center in list(self.clusters.keys())])
+        return cost

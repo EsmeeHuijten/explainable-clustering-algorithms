@@ -12,7 +12,7 @@ def get_instance(k: int, parameters: dict[str, bool]) -> Instance:
 
 
 def get_points(parameters):
-    with open('./data/mall/Mall_Customers.csv', mode='r') as csv_file:
+    with open('../data/mall/Mall_Customers.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         data = list(csv_reader)
     clean_data = [cleanup(customer, parameters) for customer in data]
