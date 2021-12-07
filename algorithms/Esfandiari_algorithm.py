@@ -14,9 +14,7 @@ from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids
 class EsfandiariAlgorithm:
     """"Solver for the k-median problem that uses the method proposed by Makarychev et al, that solves the
     k-median problem with an explainable solution."""
-    @staticmethod
-    def name():
-        return "EsfandiariAlgorithm"
+
     def __call__(self, instance, pre_clusters):
         """
         Solve a k-median problem with the method proposed by Makarychev et al

@@ -15,9 +15,7 @@ from util import Point
 class IMM:
     """"Solver for the k-median problem that uses the iterative mistake minimization method, that solves the
     k-median problem with an explainable solution."""
-    @staticmethod
-    def name():
-        return "IMM"
+
     def __call__(self, instance, pre_clusters):
         """
         Solve a k-median problem with the iterative mistake minimization algorithm

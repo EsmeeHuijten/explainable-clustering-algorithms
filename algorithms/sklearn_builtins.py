@@ -11,9 +11,6 @@ from util import Point
 
 @dataclass
 class SKLearn:
-    @staticmethod
-    def name():
-        return "SKLearn"
 
     def __call__(self, instance, _):
         # run KMeans
