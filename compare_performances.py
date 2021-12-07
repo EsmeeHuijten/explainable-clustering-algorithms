@@ -32,8 +32,7 @@ def measure_performance(algo, instance, pre_clusters):
 algoList = [iterative_mistake_minimization.IMM(), Makarychev_algorithm.MakarychevAlgorithm(),
             Esfandiari_algorithm.EsfandiariAlgorithm(), sklearn_builtins.SKLearn()]
 
-performances_dict = {algo.name():q1!
-[tuple(measure_performance(algo, instance, pre_cluster))
+performances_dict = {algo.name():[tuple(measure_performance(algo, instance, pre_cluster))
                               for instance, pre_cluster in setup] for algo in algoList}
 
 figr, axr = plt.subplots()
