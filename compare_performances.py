@@ -11,7 +11,7 @@ k = 5
 # do it again for k = 20 or k = 10 if it takes too long
 
 # create list of instances of size 2^k
-instance_sizes = [2 ** t for t in range(3, 7)]  # (3, 5)
+instance_sizes = [2 ** t for t in range(3, 9)]  # (3, 5)
 instances = [k_clusters(k, cluster_size=round(size / float(k))) for size in instance_sizes]
 
 # compute pre-clustering for each instance
@@ -31,15 +31,17 @@ def measure_performance(algo, instance, pre_clusters):
     return algo_end - algo_start, cost
 
 
-algoList = [iterative_mistake_minimization.IMM(), Makarychev_algorithm.MakarychevAlgorithm(),
-            Esfandiari_algorithm.EsfandiariAlgorithm(), sklearn_builtins.SKLearn()]
+algoList = [# iterative_mistake_minimization.IMM(),
+            Makarychev_algorithm.MakarychevAlgorithm(),
+            Esfandiari_algorithm.EsfandiariAlgorithm(),
+            sklearn_builtins.SKLearn()]
 
 performances_dict = {type(algo).__name__: [tuple(measure_performance(algo, instance, pre_cluster))
                                            for instance, pre_cluster in setup] for algo in algoList}
 
 figr, axr = plt.subplots()
 axr.set_title("Running times of different algorithms")
-axr.set_yscale('log')
+#axr.set_yscale('log')
 
 figc, axc = plt.subplots()
 axc.set_title("Boxplots of costs for different algorithms")
