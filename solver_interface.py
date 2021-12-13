@@ -99,6 +99,10 @@ class ExplainableOutput:
         self.clusters = self.clusters()
 
     def clusters(self) -> dict[int, list[Point]]:
+        # print("leaves", self.leaves)
+        for node in self.leaves:
+            print(list(node.clusters.values()))
+            print("list", len(list(node.clusters.values())[0])) # at some point in SKLearn, self.leaves is empty list
         self.medians = [median_coordinatewise(list(node.clusters.values())[0]) for node in
                         self.leaves]  # for each leaf node, get list of points in (only) cluster
         assignment = {point: point.closest_center(self.medians) for point in self.instance.points}

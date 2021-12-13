@@ -2,17 +2,25 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+from data.creditcard.conversion_creditcard import get_instance as get_creditcard_instance
 from algorithms import kmedplusplus, iterative_mistake_minimization, Makarychev_algorithm, Esfandiari_algorithm, \
     sklearn_builtins
 from data.synthetic import k_clusters
 
 k = 5
 # do it again for k = 20 or k = 10 if it takes too long
-
+creditcard_parameters = {'CUST_ID': False, 'BALANCE': True, 'BALANCE_FREQUENCY': False, 'PURCHASES': True,
+                         'ONEOFF_PURCHASES': False, 'INSTALLMENTS_PURCHASES': False, 'CASH_ADVANCES': False,
+                         'PURCHASES_FREQUENCY': False, 'ONEOFF_PURCHASES_FREQUENCY': False,
+                         'PURCHASES_INSTALLMENTS_FREQUENCY': False, 'CASH_ADVANCE_FREQUENCY': False,
+                         'CASH_ADVANCE_TRX': False, 'PURCHASES_TRX': False, 'CREDIT_LIMIT': False, 'PAYMENTS': False,
+                         'MINIMUM_PAYMENTS': False, 'PRC_FULL_PAYMENT': False, 'TENURE': False}
+# instance = get_creditcard_instance(k=k, parameters=creditcard_parameters)
 # create list of instances of size 2^k
-instance_sizes = [2 ** t for t in range(3, 9)]  # (3, 5)
-instances = [k_clusters(k, cluster_size=round(size / float(k))) for size in instance_sizes]
+instance_sizes = [2 ** t for t in range(10, 11)]  # 2 ** t has to be >= k for all t !
+print(instance_sizes)
+# instances = [k_clusters(k, cluster_size=round(size / float(k))) for size in instance_sizes]
+instances = [get_creditcard_instance(k=k, parameters=creditcard_parameters, num_points = size) for size in instance_sizes]
 
 # compute pre-clustering for each instance
 pre_solver = kmedplusplus.KMedPlusPlus(numiter=15)

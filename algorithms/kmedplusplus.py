@@ -34,7 +34,12 @@ def prob_seed(instance: Instance, seed: Optional[int]) -> CenterOutput:
     centers = [np.random.choice(instance.points)]  # choose first center randomly
     for i in range(1, instance.k):
         distances = np.array([point.closest_center(centers[0:i + 1])[1] for point in instance.points])
-        dists_norm = distances / sum(distances)
+        dists_sum = sum(distances)
+        if dists_sum > 0:
+            dists_norm = distances / sum(distances)
+        # make the code work in case one cluster consists of multiple points in the same spot, hence all having distance 0
+        else:
+            dists_norm = 1/len(distances) #all have the same probability
         new_index = np.random.choice(np.arange(0, len(instance.points)),
                                      p=dists_norm)  # np.random method needed for p argument!
         centers.append(instance.points[int(new_index)])
