@@ -8,7 +8,6 @@ from util import Point
 
 def get_instance(k: int, parameters: dict[str, bool], num_points: int) -> Instance:
     points = get_points(parameters, num_points)
-    print(len(points))
     return Instance(points, k)
 
 
@@ -18,7 +17,6 @@ def get_points(parameters, num_points: int):
         data = list(csv_reader)
     clean_data = [cleanup(customer[1], parameters) for customer in enumerate(data) if customer[0] < num_points if
                   cleanup(customer[1], parameters)]
-    # print(clean_data)
     points = [Point(array(entry)) for entry in clean_data]
     return points
 

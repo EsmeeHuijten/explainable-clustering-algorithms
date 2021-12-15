@@ -17,7 +17,7 @@ creditcard_parameters = {'CUST_ID': False, 'BALANCE': True, 'BALANCE_FREQUENCY':
                          'MINIMUM_PAYMENTS': False, 'PRC_FULL_PAYMENT': False, 'TENURE': False}
 # instance = get_creditcard_instance(k=k, parameters=creditcard_parameters)
 # create list of instances of size 2^k
-instance_sizes = [2 ** t for t in range(3, 9)]  # 2 ** t has to be >= k for all t !
+instance_sizes = [2 ** t for t in range(3, 7)]  # 2 ** t has to be >= k for all t !
 # instances = [k_clusters(k, cluster_size=round(size / float(k))) for size in instance_sizes]
 instances = [get_creditcard_instance(k=k, parameters=creditcard_parameters, num_points = size) for size in instance_sizes]
 
@@ -30,6 +30,7 @@ setup = [(instances[i], pre_clusters[i]) for i in range(len(instances))]
 
 
 def measure_performance(algo, instance, pre_clusters):
+    print(f"Running {type(algo).__name__} on instance of size {len(instance.points)}")
     algo_start = time.perf_counter()
     output = algo(instance, pre_clusters)
     cost = output.cost()
