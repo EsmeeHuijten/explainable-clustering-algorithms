@@ -1,9 +1,5 @@
 import csv
 
-# import sys
-# sys.path.append('..')
-# sys.path.append('../..')
-
 from numpy import array
 
 from solver_interface import Instance

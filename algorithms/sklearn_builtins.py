@@ -23,6 +23,7 @@ class SKLearn:
                                  label == pre_centers.index(center)] for center in
                         pre_centers}
 
+        pre_clusters = _
         # run DecisionTreeClassifier
         X = np.array(kmeans_in)
         Y = kmeans_out.labels_
@@ -30,6 +31,9 @@ class SKLearn:
         dec_tree = dec_tree.fit(X, Y)
 
         underlyingtree = dec_tree.tree_
+        print("tree", underlyingtree)
+        plot_tree(dec_tree)
+        plt.show()
         leaves = []
         split_nodes = []
         dim = instance.dimension()
