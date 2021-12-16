@@ -2,6 +2,7 @@ from __future__ import \
     annotations  # from algorithms.iterative_mistake_minimization import ClusterNode
 
 from dataclasses import dataclass, field
+from functools import reduce
 from math import inf
 import numpy as np
 from numpy import ndarray
@@ -64,7 +65,12 @@ class ClusterNode:
 def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     # update clusters and bounds for children nodes
     node_L_centers = [center for center in node.centers() if center.coordinates[i] <= theta]
-    node_L_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] <= theta] for
+    # node_L_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] <= theta] for
+    #                    center in node_L_centers}
+    # for point in list(node.clusters.values()):
+    #     print(point)
+    node_L_clusters = {center: [point for point in reduce(list.__add__, node.clusters.values())
+                                if (point.coordinates[i] <= theta and point.closest_center(node_L_centers)[0] == center)] for
                        center in node_L_centers}
     if useEsfandiari:
         node_L_X = node_L_centers
@@ -75,8 +81,11 @@ def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     node_L = ClusterNode(node_L_clusters, node_L_bounds, node_L_X)
 
     node_R_centers = [center for center in node.centers() if center.coordinates[i] > theta]
-    node_R_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] > theta] for
-                       center in node_R_centers}
+    # node_R_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] > theta] for
+    #                    center in node_R_centers}
+    node_R_clusters = {center: [point for point in reduce(list.__add__, node.clusters.values())
+                                if (point.coordinates[i] > theta and point.closest_center(node_R_centers)[0] == center)]
+                       for center in node_R_centers}
     if useEsfandiari:
         node_R_X = node_R_centers
     else:

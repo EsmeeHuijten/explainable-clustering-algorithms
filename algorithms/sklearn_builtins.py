@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from math import inf
-
+from sklearn.cluster import KMeans
+from util import Point
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier, plot_tree
@@ -13,14 +14,13 @@ class SKLearn:
 
     def __call__(self, instance, pre_clusters):
         # run KMeans
-        # kmeans_in = np.array([point.coordinates for point in instance.points])
-        # kmeans_out = KMeans(n_clusters=instance.k, random_state=0).fit(kmeans_in)
+        kmeans_in = np.array([point.coordinates for point in instance.points])
+        kmeans_out = KMeans(n_clusters=instance.k, random_state=0).fit(kmeans_in)
 
-        # extract pre_clusters from KMeans
-        # pre_centers = [Point(centercoord) for centercoord in kmeans_out.cluster_centers_]
-        # pre_clusters = {center: [point for point, label in zip(instance.points, kmeans_out.labels_) if
-        #                          label == pre_centers.index(center)] for center in
-        #                 pre_centers}
+        pre_centers = [Point(centercoord) for centercoord in kmeans_out.cluster_centers_]
+        pre_clusters = {center: [point for point, label in zip(instance.points, kmeans_out.labels_) if
+                                 label == pre_centers.index(center)] for center in
+                        pre_centers}
 
         # run DecisionTreeClassifier
         instance_in = np.array([point.coordinates for point in instance.points])
@@ -32,14 +32,14 @@ class SKLearn:
                 if point in pre_clusters[center]:
                     return labels.index(center)
 
-        Y = np.array([find_label(pre_clusters, point) for point in instance.points])
-        # Y = kmeans_out.labels_
+        # Y = np.array([find_label(pre_clusters, point) for point in instance.points])
+        Y = kmeans_out.labels_
         dec_tree = DecisionTreeClassifier(max_leaf_nodes=instance.k)
         dec_tree = dec_tree.fit(X, Y)
 
         underlyingtree = dec_tree.tree_
         plot_tree(dec_tree)
-        plt.show()
+        # plt.show()
         leaves = []
         split_nodes = []
         dim = instance.dimension()
