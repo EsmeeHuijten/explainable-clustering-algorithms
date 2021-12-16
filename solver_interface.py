@@ -62,6 +62,33 @@ class ClusterNode:
         return len(self.clusters.keys()) == 1
 
 
+def make_kids_IMM(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
+    # update clusters and bounds for children nodes
+    node_L_centers = [center for center in node.centers() if center.coordinates[i] <= theta]
+    node_L_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] <= theta] for
+                       center in node_L_centers}
+    if useEsfandiari:
+        node_L_X = node_L_centers
+    else:
+        node_L_X = [point for point in node.set if point.coordinates[i] <= theta]
+    node_L_bounds = node.bounds.copy()
+    node_L_bounds[i][1] = theta  # change upper bound to theta
+    node_L = ClusterNode(node_L_clusters, node_L_bounds, node_L_X)
+
+    node_R_centers = [center for center in node.centers() if center.coordinates[i] > theta]
+    node_R_clusters = {center: [point for point in node.clusters[center] if point.coordinates[i] > theta] for
+                       center in node_R_centers}
+    if useEsfandiari:
+        node_R_X = node_R_centers
+    else:
+        node_R_X = [point for point in node.set if point.coordinates[i] > theta]
+    node_R_bounds = node.bounds.copy()
+    node_R_bounds[i][0] = theta  # change lower bound to theta
+    node_R = ClusterNode(node_R_clusters, node_R_bounds, node_R_X)
+    return node_L, node_R
+
+
+
 def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     # update clusters and bounds for children nodes
     node_L_centers = [center for center in node.centers() if center.coordinates[i] <= theta]

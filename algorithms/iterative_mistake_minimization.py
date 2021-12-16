@@ -8,7 +8,7 @@ import numpy as np
 from typing import Tuple
 
 import algorithms.kmedplusplus
-from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids
+from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids_IMM
 from util import Point
 
 @dataclass
@@ -31,7 +31,7 @@ def build_tree(instance: Instance, pre_clusters: dict):
     dim = instance.dimension()
     leaves = []
     split_nodes = []
-    root = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim))  # initial bounds are -inf, inf
+    root = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim), instance.points)  # initial bounds are -inf, inf
 
     def rec_build_tree(node: ClusterNode):
         if node.is_homogeneous():
@@ -69,6 +69,7 @@ def find_split(node: ClusterNode) -> Tuple[int, float, ClusterNode, ClusterNode]
         theta_candidates = [(a + b) / 2.0 for a, b in
                             zip(point_coords, point_coords[1:])]  # 2.0 to avoid integer division
         # TODO: (implement the efficient way of counting mistakes while iterating over thetas)
+
         brute_force_compute = [(count_mistakes(i,theta), theta) for theta in theta_candidates]
         min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
         return min_mistakes, i, best_theta
@@ -77,7 +78,7 @@ def find_split(node: ClusterNode) -> Tuple[int, float, ClusterNode, ClusterNode]
     dimension = len(node.bounds)
     split_candidates = [find_best_split_dim(i) for i in range(dimension)]
     _, i, theta = min(split_candidates, key=lambda entry: entry[0])
-    node_L, node_R = make_kids(node, i, theta)
+    node_L, node_R = make_kids_IMM(node, i, theta)
     return i, theta, node_L, node_R
 
 
