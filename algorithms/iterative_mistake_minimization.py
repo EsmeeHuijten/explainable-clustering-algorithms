@@ -62,8 +62,8 @@ def find_split(node: ClusterNode) -> Tuple[int, float, ClusterNode, ClusterNode]
         l_i, r_i = min(center_coords), max(center_coords)
 
         # iterate over all potential thetas
-        point_coords = [point.coordinates[i] for l in clusters.values() for point in l if
-                        l_i <= point.coordinates[i] <= r_i]
+        point_coords = [l_i] + [point.coordinates[i] for l in clusters.values() for point in l if
+                        l_i <= point.coordinates[i] <= r_i] + [r_i]
         point_coords.sort()
         # take the midpoint of consecutive coordinates to avoid equality issues
         theta_candidates = [(a + b) / 2.0 for a, b in
