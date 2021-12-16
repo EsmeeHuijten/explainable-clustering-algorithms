@@ -75,7 +75,7 @@ def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     if useEsfandiari:
         node_L_X = node_L_centers
     else:
-        node_L_X = node_L_centers + list(node_L_clusters.values())
+        node_L_X = node_L_centers + reduce(list.__add__, node.clusters.values())
     node_L_bounds = node.bounds.copy()
     node_L_bounds[i][1] = theta  # change upper bound to theta
     node_L = ClusterNode(node_L_clusters, node_L_bounds, node_L_X)
@@ -89,7 +89,7 @@ def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     if useEsfandiari:
         node_R_X = node_R_centers
     else:
-        node_R_X = node_R_centers + list(node_R_clusters.values())
+        node_R_X = node_R_centers + reduce(list.__add__, node.clusters.values())
     node_R_bounds = node.bounds.copy()
     node_R_bounds[i][0] = theta  # change lower bound to theta
     node_R = ClusterNode(node_R_clusters, node_R_bounds, node_R_X)
@@ -108,7 +108,7 @@ class ExplainableOutput:
         self.clusters = self.clusters()
 
     def clusters(self) -> dict[int, list[Point]]:
-        self.medians = [median_coordinatewise(list(node.clusters.values())[0]) for node in
+        self.medians = [median_coordinatewise(node.set) for node in
                         self.leaves]  # for each leaf node, get list of points in (only) cluster
         assignment = {point: point.closest_center(self.medians) for point in self.instance.points}
         return {center: [point for point in self.instance.points if assignment[point][0] == center] for center in

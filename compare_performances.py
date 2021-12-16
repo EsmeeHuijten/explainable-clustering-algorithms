@@ -43,8 +43,8 @@ kmeans_out = [KMeans(n_clusters=instances[i].k, random_state=0).fit(kmeans_in[i]
 pre_clusters = []
 for i in range(len(instances)):
     pre_centers = [Point(centercoord) for centercoord in kmeans_out[i].cluster_centers_]
-    print(instances[i])
-    print(kmeans_out[i])
+    #print(instances[i])
+    #print(kmeans_out[i])
     pre_clusters.append({center: [point for point, label in zip(instances[i].points, kmeans_out[i].labels_) if
                                 label == pre_centers.index(center)] for center in
                        pre_centers})
