@@ -63,6 +63,6 @@ def median_coordinatewise(clusterpoints: list[Point]) -> Point:
     """
     x_list = [point.coordinates[0] for point in clusterpoints]
     y_list = [point.coordinates[1] for point in clusterpoints]
-    cost_x = [sum([np.abs(point1-point2) for point2 in x_list]) for point1 in x_list]
-    cost_y = [sum([np.abs(point1-point2) for point2 in y_list]) for point1 in y_list]
-    return Point([x_list[np.argmin(cost_x)], y_list[np.argmin(cost_y)]])
+    #cost_x = [sum([np.abs(point1-point2) for point2 in x_list]) for point1 in x_list]
+    #cost_y = [sum([np.abs(point1-point2) for point2 in y_list]) for point1 in y_list]
+    return Point(np.array([np.median(x_list), np.median(y_list)]))
