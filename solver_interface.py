@@ -102,7 +102,7 @@ def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     if useEsfandiari:
         node_L_X = node_L_centers
     else:
-        node_L_X = node_L_centers + reduce(list.__add__, node.clusters.values())
+        node_L_X = [point for point in node.set if point.coordinates[i] <= theta]
     node_L_bounds = node.bounds.copy()
     node_L_bounds[i][1] = theta  # change upper bound to theta
     node_L = ClusterNode(node_L_clusters, node_L_bounds, node_L_X)
@@ -116,7 +116,7 @@ def make_kids(node: ClusterNode, i: int, theta: float, useEsfandiari = False):
     if useEsfandiari:
         node_R_X = node_R_centers
     else:
-        node_R_X = node_R_centers + reduce(list.__add__, node.clusters.values())
+        node_R_X = [point for point in node.set if point.coordinates[i] > theta]
     node_R_bounds = node.bounds.copy()
     node_R_bounds[i][0] = theta  # change lower bound to theta
     node_R = ClusterNode(node_R_clusters, node_R_bounds, node_R_X)
