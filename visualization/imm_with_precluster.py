@@ -16,8 +16,8 @@ def show_explainable_clusters(output: ExplainableOutput):
 
     xcoords = [point.coordinates[0] for point in output.instance.points]
     ycoords = [point.coordinates[1] for point in output.instance.points]
-    xmin, xmax = min(xcoords), max(xcoords)
-    ymin, ymax = min(ycoords), max(ycoords)
+    xmin, xmax = min(xcoords)-10, max(xcoords)+10
+    ymin, ymax = min(ycoords)-10, max(ycoords)+10
 
     fig, ax = plt.subplots()
     for i in range(k):

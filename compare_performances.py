@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import matplotlib.pyplot as plt
 import numpy as np
-from util import Point, dist
+from util import Point, dist, median_coordinatewise
 from data.creditcard.conversion_creditcard import get_instance as get_creditcard_instance
 from algorithms import kmedplusplus, iterative_mistake_minimization, Makarychev_algorithm, Esfandiari_algorithm, \
     sklearn_builtins
@@ -12,8 +12,10 @@ from data.synthetic import k_clusters
 
 
 def cost(clusters) -> float:
-    cost_tot = sum([sum([dist(center, point) for point in clusters[center]]) for center in list(clusters.keys())])
-    return cost_tot
+    mediandict = {center: median_coordinatewise(clusters[center]) for center in clusters.keys()}
+    return sum(  sum(dist(mediandict[center], point) for point in clusters[center]) for center in clusters.keys())
+    #cost_tot = sum([]) for center in list(clusters.keys())])
+    #return cost_tot
 
 k = 3
 # do it again for k = 20 or k = 10 if it takes too long
