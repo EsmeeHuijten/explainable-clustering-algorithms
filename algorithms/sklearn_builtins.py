@@ -43,7 +43,7 @@ class SKLearn:
         leaves = []
         split_nodes = []
         dim = instance.dimension()
-        root = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim))
+        root = ClusterNode(pre_clusters, np.array([[-inf, inf]] * dim), instance.points)
 
         def rec_tree(node: ClusterNode, j: int):
             if underlyingtree.children_left[j] == underlyingtree.children_right[j]:
