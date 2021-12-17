@@ -67,9 +67,8 @@ def find_split(node: ClusterNode) -> Tuple[int, float, ClusterNode, ClusterNode]
         point_coords.sort()
         # take the midpoint of consecutive coordinates to avoid equality issues
         theta_candidates = [(a + b) / 2.0 for a, b in
-                            zip(point_coords, point_coords[1:])]  # 2.0 to avoid integer division
+                            zip(point_coords, point_coords[1:]) if a!=b]  # 2.0 to avoid integer division
         # TODO: (implement the efficient way of counting mistakes while iterating over thetas)
-
         brute_force_compute = [(count_mistakes(i,theta), theta) for theta in theta_candidates]
         min_mistakes, best_theta = min(brute_force_compute, key=lambda entry: entry[0])
         return min_mistakes, i, best_theta
