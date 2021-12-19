@@ -11,7 +11,7 @@ import algorithms.kmedplusplus
 from solver_interface import Instance, ExplainableOutput, ClusterNode, make_kids
 
 @dataclass
-class MakarychevAlgorithm:
+class Makarychev:
     """"Solver for the k-median problem that uses the method proposed by Makarychev et al, that solves the
     k-median problem with an explainable solution."""
 

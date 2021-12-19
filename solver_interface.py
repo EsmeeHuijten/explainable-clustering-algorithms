@@ -142,5 +142,8 @@ class ExplainableOutput:
                 self.medians}
 
     def cost(self) -> float:
+        print("inside wrong cost function")
         cost = sum([sum([dist(center, point) for point in self.clusters[center]]) for center in list(self.clusters.keys())])
         return cost
+        # mediandict = {center: median_coordinatewise(self.clusters[center]) for center in self.clusters.keys()}
+        # return sum(sum(dist(mediandict[center], point) for point in self.clusters[center]) for center in self.clusters.keys())
